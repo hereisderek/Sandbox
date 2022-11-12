@@ -28,7 +28,7 @@
 - name: ddns updater | Create config file.
   ansible.builtin.file:
     path: "{{ ddns_updater_paths_location }}/config.json"
-    state: file
+    state: touch
     owner: "{{ user.name }}"
     group: "{{ user.name }}"
     mode: 0775
