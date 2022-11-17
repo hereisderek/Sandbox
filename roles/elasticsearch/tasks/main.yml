@@ -1,6 +1,6 @@
 ##########################################################################
-# Title:            Sandbox: Recyclarr                                   #
-# Author(s):        BeansIsFat                                           #
+# Title:            Sandbox: elasticsearch                               #
+# Author(s):        JigSawFr                                             #
 # URL:              https://github.com/saltyorg/Sandbox                  #
 # --                                                                     #
 ##########################################################################
@@ -13,25 +13,15 @@
 - name: Create directories
   ansible.builtin.include_tasks: "{{ resources_tasks_path }}/directories/create_directories.yml"
 
-- name: Check config exists
-  ansible.builtin.stat:
-    path: "{{ recyclarr_config_location }}"
-  register: recyclarr_config
-
-- name: Generate default config
-  community.docker.docker_container:
-    name: recyclarr-config
-    image: "{{ recyclarr_docker_image }}"
-    user: "{{ uid }}:{{ gid }}"
-    command: 'create-config'
-    volumes:
-      - "{{ recyclarr_paths_location }}:/config"
-    networks:
-      - name: saltbox
-    purge_networks: yes
-    auto_remove: yes
-    state: started
-  when: (not recyclarr_config.stat.exists)
-
 - name: Create Docker container
   ansible.builtin.include_tasks: "{{ resources_tasks_path }}/docker/create_docker_container.yml"
+
+- name: Fix permissions
+  ansible.builtin.file:
+    path: "{{ elasticsearch_paths_location }}"
+    state: directory
+    owner: "{{ user.name }}"
+    group: "{{ user.name }}"
+    mode: "0775"
+    recurse: yes
+  ignore_errors: true

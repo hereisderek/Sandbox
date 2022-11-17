@@ -40,6 +40,7 @@
     - { role: doplarr, tags: ['doplarr'] }
     - { role: dozzle, tags: ['dozzle'] }
     - { role: ddns_updater, tags: ['ddns_updater'] }
+    - { role: elasticsearch, tags: ['elasticsearch'] }
     - { role: embystat, tags: ['embystat'] }
     - { role: epms, tags: ['epms'] }
     - { role: filebot, tags: ['filebot'] }
@@ -104,6 +105,7 @@
     - { role: plex_auto_languages, tags: ['plex_auto_languages'] }
     - { role: plex_patrol, tags: ['plex_patrol'] }
     - { role: plex_utills, tags: ['plex_utills'] }
+    - { role: plexshare, tags: ['plexshare'] }
     - { role: plextraktsync, tags: ['plextraktsync'] }
     - { role: privatebin, tags: ['privatebin'] }
     - { role: puddletag, tags: ['puddletag'] }
@@ -134,11 +136,13 @@
     - { role: telegraf, tags: ['telegraf'] }
     - { role: thelounge, tags: ['thelounge'] }
     - { role: tika, tags: ['tika'] }
+    - { role: tqm, tags: ['tqm'] }
     - { role: traefik_robotstxt, tags: ['traefik_robotstxt'] }
     - { role: transmission, tags: ['transmission'] }
     - { role: transmissionvpn, tags: ['transmissionvpn'] }
     - { role: transmissionx, tags: ['transmissionx'] }
     - { role: trilium, tags: ['trilium'] }
+    - { role: tubearchivist, tags: ['tubearchivist'] }
     - { role: tvheadend, tags: ['tvheadend'] }
     - { role: unifi, tags: ['unifi'] }
     - { role: unmanic, tags: ['unmanic'] }

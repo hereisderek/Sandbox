@@ -1,39 +1,36 @@
 #########################################################################
-# Title:            Sandbox: Photoprism                                 #
-# Author(s):        Raneydazed                                          #
+# Title:            Sandbox: plexshare                                  #
+# Author(s):        JigSawFr                                            #
 # URL:              https://github.com/saltyorg/Sandbox                 #
 # --                                                                    #
 #########################################################################
 #                   GNU General Public License v3.0                     #
 #########################################################################
+# Repository: https://github.com/Chewbaka69/PlexShare/blob/master/docker-compose.yml
 ---
+- name: Check if db folder exists
+  ansible.builtin.stat:
+    path: "{{ server_appdata_path }}/{{ plexshare_paths_folder }}/mariadb"
+  register: stat_plexshare_db_folder
 
 - name: MariaDB Role
   ansible.builtin.include_role:
     name: mariadb
+  vars:
+    mariadb_name: "{{ plexshare_name }}_mariadb"  # Remove when instance support merged into Saltbox
+    mariadb_instances: ["{{ plexshare_name }}_mariadb"]
+    mariadb_docker_image_tag: "latest"
+    mariadb_paths_folder: "{{ plexshare_name }}"
+    mariadb_paths_location: "{{ server_appdata_path }}/{{ plexshare_paths_folder }}/mariadb"
 
-- name: MariaDB | Create photoprism database
+- name: MariaDB | Create plexshare database
   community.mysql.mysql_db:
-    name: "photoprisms"
-    login_host: "mariadb"
+    name: "plexshare"
+    login_host: "{{ plexshare_name }}_mariadb"
     login_user: "root"
     login_password: "{{ mariadb_docker_envs_mysql_root_password }}"
     state: present
-  ignore_errors: true
-
-- name: Permissions | Create photoprism group
-  ansible.builtin.group:
-    name: photoprism
-    state: present
-    gid: 1500
-  ignore_errors: true
-
-- name: Permissions | Add to photoprism group
-  ansible.builtin.user:
-    name: "{{ user.name }}"
-    groups: photoprism
-    append: yes
-  ignore_errors: true
+  when: not stat_plexshare_db_folder.stat.exists
 
 - name: Add DNS record
   ansible.builtin.include_tasks: "{{ resources_tasks_path }}/dns/tasker.yml"
@@ -50,3 +47,7 @@
 
 - name: Create Docker container
   ansible.builtin.include_tasks: "{{ resources_tasks_path }}/docker/create_docker_container.yml"
+
+- name: Print Tweaking Info
+  ansible.builtin.debug:
+    msg: "For custom docker envs, please visit: https://github.com/Chewbaka69/PlexShare"
