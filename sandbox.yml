@@ -39,6 +39,7 @@
     - { role: delugevpn, tags: ['delugevpn'] }
     - { role: doplarr, tags: ['doplarr'] }
     - { role: dozzle, tags: ['dozzle'] }
+    - { role: duplicati, tags: ['duplicati'] }
     - { role: ddns_updater, tags: ['ddns_updater'] }
     - { role: duplicati, tags: ['duplicati'] }
     - { role: elasticsearch, tags: ['elasticsearch'] }

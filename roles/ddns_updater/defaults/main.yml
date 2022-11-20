@@ -32,7 +32,7 @@ ddns_updater_web_domain: "{{ user.domain }}"
 ddns_updater_web_port: "8000"
 ddns_updater_web_url: "{{ 'https://' + ddns_updater_web_subdomain + '.' + ddns_updater_web_domain
                      if (reverse_proxy_is_enabled)
-                     else 'http://localhost:' + pddns_updater_web_port }}"
+                     else 'http://localhost:' + ddns_updater_web_port }}"
 
 ################################
 # DNS
