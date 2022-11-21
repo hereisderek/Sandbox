@@ -37,6 +37,7 @@
     - { role: comixed, tags: ['comixed'] }
     - { role: deemix, tags: ['deemix'] }
     - { role: delugevpn, tags: ['delugevpn'] }
+    - { role: docspell, tags: ['docspell'] }
     - { role: doplarr, tags: ['doplarr'] }
     - { role: dozzle, tags: ['dozzle'] }
     - { role: duplicati, tags: ['duplicati'] }
@@ -62,6 +63,8 @@
     - { role: handbrake, tags: ['handbrake'] }
     - { role: healthchecks, tags: ['healthchecks'] }
     - { role: heimdall, tags: ['heimdall'] }
+    - { role: homarr, tags: ['homarr'] }
+    - { role: homeassistant, tags: ['homeassistant'] }
     - { role: homebox, tags: ['homebox'] }
     - { role: influxdb, tags: ['influxdb'] }
     - { role: invoiceninjav5, tags: ['invoiceninja'] }
@@ -92,6 +95,7 @@
     - { role: nextcloud, tags: ['nextcloud'] }
     - { role: mkvtoolnix, tags: ['mkvtoolnix'] }
     - { role: nabarr, tags: ['nabarr'] }
+    - { role: node_red, tags: ['node-red'] }
     - { role: notifiarr, tags: ['notifiarr'] }
     - { role: olivetin, tags: ['olivetin'] }
     - { role: ombi, tags: ['ombi'] }
@@ -101,6 +105,7 @@
     - { role: paperless_ngx, tags: ['paperless-ngx'] }
     - { role: pgadmin, tags: ['pgadmin'] }
     - { role: photoprism, tags: ['photoprism'] }
+    - { role: phpmyadmin, tags: ['phpmyadmin'] }
     - { role: plex_autoscan, tags: ['plex_autoscan'] }
     - { role: plex_dupefinder, tags: ['plex_dupefinder'] }
     - { role: plex_meta_manager, tags: ['plex-meta-manager'] }
@@ -126,6 +131,7 @@
     - { role: rocketchat, tags: ['rocketchat'] }
     - { role: sabthrottle, tags: ['sabthrottle'] }
     - { role: sarotate, tags: ['sarotate'] }
+    - { role: solr, tags: ['solr'] }
     - { role: speedtest, tags: ['speedtest'] }
     - { role: sqlitebrowser, tags: ['sqlitebrowser'] }
     - { role: sshwifty, tags: ['sshwifty'] }
