@@ -89,8 +89,12 @@ nextcloud_docker_envs_default:
   MYSQL_USER: "root"
   MYSQL_PASSWORD: "{{ mariadb_docker_envs_mysql_root_password }}"
   MYSQL_HOST: "mariadb"
+  OVERWRITEHOST: "{{ nextcloud_web_subdomain + '.' + nextcloud_web_domain }}"
+  OVERWRITEPROTOCOL: "https"
+  OVERWRITECLIURL: "https://{{ nextcloud_web_subdomain + '.' + nextcloud_web_domain }}"
   PHP_MEMORY_LIMIT: "{{ nextcloud_php_memory_limit }}"
   PHP_UPLOAD_LIMIT: "{{ nextcloud_php_upload_limit }}"
+  TRUSTED_PROXIES: "172.19.0.0/16"
 nextcloud_docker_envs_custom: {}
 nextcloud_docker_envs: "{{ nextcloud_docker_envs_default
                            | combine(nextcloud_docker_envs_custom) }}"
@@ -123,9 +127,8 @@ nextcloud_docker_hosts: "{{ docker_hosts_common
 
 # Labels
 nextcloud_docker_labels_default:
-  traefik.http.middlewares.nextcloud-caldav.redirectregex.permanent: "true"
-  traefik.http.middlewares.nextcloud-caldav.redirectregex.regex: "^https://(.*)/.well-known/(card|cal)dav"
-  traefik.http.middlewares.nextcloud-caldav.redirectregex.replacement: "https://$${1}/remote.php/dav/"
+  traefik.http.middlewares.nextcloud-caldav.replacepathregex.regex: "^/.well-known/ca(l|rd)dav"
+  traefik.http.middlewares.nextcloud-caldav.replacepathregex.replacement: "/remote.php/dav/"
 nextcloud_docker_labels_custom: {}
 nextcloud_docker_labels: "{{ docker_labels_common
                              | combine(nextcloud_docker_labels_default)
