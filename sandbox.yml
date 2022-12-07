@@ -126,6 +126,7 @@
     - { role: requestrr, tags: ['requestrr'] }
     - { role: requestrrx, tags: ['requestrrx'] }
     - { role: resiliosync, tags: ['resiliosync'] }
+    - { role: restreamer, tags: ['restreamer'] }
     - { role: rflood, tags: ['rflood'] }
     - { role: rfloodx, tags: ['rfloodx'] }
     - { role: rocketchat, tags: ['rocketchat'] }
