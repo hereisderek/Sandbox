@@ -21,10 +21,11 @@ tubearchivist_name: tubearchivist
 tubearchivist_paths_folder: "{{ tubearchivist_name }}"
 tubearchivist_paths_location: "{{ server_appdata_path }}/{{ tubearchivist_paths_folder }}/app"
 tubearchivist_paths_downloads_location: "{{ downloads_root_path }}/{{ tubearchivist_paths_folder }}"
+tubearchivist_paths_cache_location: "{{ tubearchivist_paths_location }}/cache"
 tubearchivist_paths_folders_list:
   - "{{ tubearchivist_paths_location }}"
   - "{{ tubearchivist_paths_downloads_location }}"
-  - "{{ tubearchivist_paths_location }}/cache"
+  - "{{ tubearchivist_paths_cache_location }}"
 
 ################################
 # Web
@@ -105,7 +106,7 @@ tubearchivist_docker_commands: "{{ tubearchivist_docker_commands_default
 # Volumes
 tubearchivist_docker_volumes_default:
   - "{{ tubearchivist_paths_downloads_location }}/:/youtube"
-  - "{{ tubearchivist_paths_location }}/cache:/cache"
+  - "{{ tubearchivist_paths_cache_location }}:/cache"
 tubearchivist_docker_volumes_custom: []
 tubearchivist_docker_volumes: "{{ tubearchivist_docker_volumes_default
                                   + tubearchivist_docker_volumes_custom }}"
