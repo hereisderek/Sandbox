@@ -20,8 +20,10 @@ ddns_updater_name: ddns_updater
 
 ddns_updater_paths_folder: "{{ ddns_updater_name }}"
 ddns_updater_paths_location: "{{ server_appdata_path }}/{{ ddns_updater_paths_folder }}"
+ddns_updater_backup_location: "{{ ddns_updater_paths_location }}/backups"
 ddns_updater_paths_folders_list:
   - "{{ ddns_updater_paths_location }}"
+  - "{{ ddns_updater_backup_location }}"
 
 ################################
 # Web
@@ -88,6 +90,7 @@ ddns_updater_docker_envs_default:
   TZ: "{{ tz }}"
   PUID: "{{ uid }}"
   PGID: "{{ gid }}"
+  BACKUP_DIRECTORY: "/updater/data/backups"
 ddns_updater_docker_envs_custom: {}
 ddns_updater_docker_envs: "{{ ddns_updater_docker_envs_default
                             | combine(ddns_updater_docker_envs_custom) }}"
