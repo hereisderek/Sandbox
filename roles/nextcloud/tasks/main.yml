@@ -11,6 +11,15 @@
   ansible.builtin.include_role:
     name: mariadb
 
+- name: Redis Role
+  ansible.builtin.include_role:
+    name: redis
+  vars:
+    redis_name: "{{ nextcloud_name }}_redis"
+    redis_docker_image_tag: "alpine"
+    redis_paths_folder: "{{ nextcloud_name }}"
+    redis_paths_location: "{{ server_appdata_path }}/{{ redis_paths_folder }}/redis"
+
 - name: Add DNS record
   ansible.builtin.include_tasks: "{{ resources_tasks_path }}/dns/tasker.yml"
   vars:

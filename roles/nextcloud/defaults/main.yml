@@ -90,6 +90,8 @@ nextcloud_docker_envs_default:
   PHP_MEMORY_LIMIT: "{{ nextcloud_php_memory_limit }}"
   PHP_UPLOAD_LIMIT: "{{ nextcloud_php_upload_limit }}"
   TRUSTED_PROXIES: "172.19.0.0/16"
+  REDIS_HOST: "{{ nextcloud_name }}_redis"
+  REDIS_HOST_PORT: "6379"
 nextcloud_docker_envs_custom: {}
 nextcloud_docker_envs: "{{ nextcloud_docker_envs_default
                            | combine(nextcloud_docker_envs_custom) }}"
