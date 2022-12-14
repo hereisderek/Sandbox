@@ -38,27 +38,16 @@
       ansible.builtin.wait_for:
         path: "{{ _nextcloud_config_path }}"
         state: present
-    
-    - name: Nextcloud | load {{ _nextcloud_config_path }}
-      slurp:
-        src: _nextcloud_config_path
-      register: imported_config
-
-    - debug:
-        msg: "{{ imported_config }}"
+        timeout: 120
 
     - name: "Nextcloud | set check_data_directory_permissions to false"
       ansible.builtin.lineinfile:
-        path: _nextcloud_config_path
-        insertbefore: '^);\Z'
-        line: "'check_data_directory_permissions' => false,"
+        path: "{{ _nextcloud_config_path }}"
+        insertbefore: '^(\s*)\);(\s*)$'
+        search_string: "check_data_directory_permissions"
+        line: "  'check_data_directory_permissions' => false,"
 
-    - name: Nextcloud | load {{ _nextcloud_config_path }}
-      slurp:
-        src: _nextcloud_config_path
-      register: imported_config
-
-    - debug:
-        msg: "new: {{ imported_config }}"
+    - name: Restart Docker container
+      ansible.builtin.include_tasks: "{{ resources_tasks_path }}/docker/restart_docker_container.yml"
   
   when: (not continuous_integration) and (nextcloud_skip_data_directory_permissions_check is defined) and (nextcloud_skip_data_directory_permissions_check)
