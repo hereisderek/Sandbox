@@ -22,6 +22,13 @@
 - name: Remove existing Docker container
   ansible.builtin.include_tasks: "{{ resources_tasks_path }}/docker/remove_docker_container.yml"
 
+- name: Pre-Install | Get next available port within the range of '57881-57999' # noqa fqcn[action]
+  find_next_open_port:
+    low_bound: 57881
+    high_bound: 57999
+  register: port_lookup_57881
+  ignore_errors: true
+  
 - name: Create directories
   ansible.builtin.include_tasks: "{{ resources_tasks_path }}/directories/create_directories.yml"
 
