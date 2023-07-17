@@ -1,6 +1,6 @@
 #########################################################################
-# Title:         Sandbox: Private Bin                                   #
-# Author(s):     tipdec-siblyn, thatsnasty, salty                       #
+# Title:         Sandbox: Krusader                                      #
+# Author(s):     ChuckNorris9939                                        #
 # URL:           https://github.com/saltyorg/Sandbox                    #
 # --                                                                    #
 #########################################################################
@@ -15,36 +15,10 @@
     dns_proxy: "{{ lookup('vars', role_name + '_dns_proxy') }}"
 
 - name: Remove existing Docker container
-  community.docker.docker_container:
-    name: "{{ lookup('vars', role_name + '_docker_container') }}"
-    state: absent
-    container_default_behavior: compatibility
+  ansible.builtin.include_tasks: "{{ resources_tasks_path }}/docker/remove_docker_container.yml"
 
 - name: Create directories
   ansible.builtin.include_tasks: "{{ resources_tasks_path }}/directories/create_directories.yml"
-
-- name: Check 'conf.php'' exists
-  ansible.builtin.stat:
-    path: "{{ privatebin_paths_location }}/conf.php"
-  register: conf_php
-
-- name: Import default 'conf.php'
-  ansible.builtin.get_url:
-    url: https://raw.githubusercontent.com/PrivateBin/PrivateBin/master/cfg/conf.sample.php
-    dest: "{{ privatebin_paths_location }}/conf.php"
-    owner: "{{ user.name }}"
-    group: "{{ user.name }}"
-    validate_certs: false
-    mode: 0775
-    force: true
-  when: not conf_php.stat.exists
-
-- name: Create a volume with options
-  community.docker.docker_volume:
-    name: "{{ lookup('vars', role_name + '_docker_container') }}_tmpfs_run"
-    driver_options:
-      type: tmpfs
-      device: tmpfs
 
 - name: Create Docker container
   ansible.builtin.include_tasks: "{{ resources_tasks_path }}/docker/create_docker_container.yml"

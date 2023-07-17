@@ -60,6 +60,7 @@
     - { role: goaccess, tags: ['goaccess'] }
     - { role: gitea, tags: ['gitea'] }
     - { role: glances_web, tags: ['glances-web'] }
+    - { role: gluetun, tags: ['gluetun'] }
     - { role: goplaxt, tags: ['goplaxt'] }
     - { role: gotenberg, tags: ['gotenberg'] }
     - { role: gotify, tags: ['gotify'] }
@@ -83,6 +84,7 @@
     - { role: kitana, tags: ['kitana'] }
     - { role: koel, tags: ['koel'] }
     - { role: komga, tags: ['komga'] }
+    - { role: krusader, tags: ['krusader'] }
     - { role: lazylibrarian, tags: ['lazylibrarian'] }
     - { role: linkding, tags: ['linkding'] }
     - { role: logarr, tags: ['logarr'] }
@@ -146,11 +148,13 @@
     - { role: stash, tags: ['stash'] }
     - { role: syncthing, tags: ['syncthing'] }
     - { role: tandoor, tags: ['tandoor'] }
+    - { role: tauticord, tags: ['tauticord'] }
     - { role: tdarr, tags: ['tdarr'] }
     - { role: tdarr_node, tags: ['tdarr_node'] }
     - { role: teamspeak, tags: ['teamspeak'] }
     - { role: telegraf, tags: ['telegraf'] }
     - { role: thelounge, tags: ['thelounge'] }
+    - { role: threadfin, tags: ['threadfin'] }
     - { role: tika, tags: ['tika'] }
     - { role: tqm, tags: ['tqm'] }
     - { role: trackarr, tags: ['trackarr'] }
