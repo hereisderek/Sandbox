@@ -31,7 +31,9 @@ comicstreamer_paths_folders_list:
 comicstreamer_web_subdomain: "{{ comicstreamer_name }}"
 comicstreamer_web_domain: "{{ user.domain }}"
 comicstreamer_web_port: "32500"
-comicstreamer_web_url: "{{ 'https://' + comicstreamer_web_subdomain + '.' + comicstreamer_web_domain }}"
+comicstreamer_web_url: "{{ 'https://' + (comicstreamer_web_subdomain + '.' + comicstreamer_web_domain
+                        if (comicstreamer_web_subdomain | length > 0)
+                        else comicstreamer_web_domain) }}"
 
 ################################
 # DNS
@@ -45,7 +47,9 @@ comicstreamer_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-comicstreamer_traefik_middleware: "{{ traefik_default_middleware }}"
+comicstreamer_traefik_sso_middleware: ""
+comicstreamer_traefik_middleware_default: "{{ traefik_default_middleware }}"
+comicstreamer_traefik_middleware_custom: ""
 comicstreamer_traefik_certresolver: "{{ traefik_default_certresolver }}"
 comicstreamer_traefik_enabled: true
 

@@ -23,8 +23,8 @@ audiobookshelf_paths_folders_list:
   - "{{ audiobookshelf_paths_location }}"
   - "{{ audiobookshelf_paths_location }}/config"
   - "{{ audiobookshelf_paths_location }}/metadata"
-  - "/mnt/unionfs/Media/audiobooks"
-  - "/mnt/unionfs/Media/podcasts"
+  - "/mnt/unionfs/Media/Audiobooks"
+  - "/mnt/unionfs/Media/Podcasts"
 
 ################################
 # Web
@@ -33,8 +33,9 @@ audiobookshelf_paths_folders_list:
 audiobookshelf_web_subdomain: "{{ audiobookshelf_name }}"
 audiobookshelf_web_domain: "{{ user.domain }}"
 audiobookshelf_web_port: "80"
-audiobookshelf_web_url: "{{ 'https://' + lookup('vars', audiobookshelf_name + '_web_subdomain', default=audiobookshelf_web_subdomain)
-                             + '.' + lookup('vars', audiobookshelf_name + '_web_domain', default=audiobookshelf_web_domain) }}"
+audiobookshelf_web_url: "{{ 'https://' + (audiobookshelf_web_subdomain + '.' + audiobookshelf_web_domain
+                         if (audiobookshelf_web_subdomain | length > 0)
+                         else audiobookshelf_web_domain) }}"
 
 ################################
 # DNS
@@ -49,18 +50,8 @@ audiobookshelf_dns_proxy: "{{ dns.proxied }}"
 ################################
 
 audiobookshelf_traefik_sso_middleware: ""
-
-audiobookshelf_traefik_middleware_default: "{{ traefik_default_middleware + ','
-                                               + lookup('vars', audiobookshelf_name + '_traefik_sso_middleware', default=audiobookshelf_traefik_sso_middleware)
-                                            if (lookup('vars', audiobookshelf_name + '_traefik_sso_middleware', default=audiobookshelf_traefik_sso_middleware) | length > 0)
-                                            else traefik_default_middleware }}"
+audiobookshelf_traefik_middleware_default: "{{ traefik_default_middleware }}"
 audiobookshelf_traefik_middleware_custom: ""
-audiobookshelf_traefik_middleware: "{{ audiobookshelf_traefik_middleware_default + ','
-                                       + audiobookshelf_traefik_middleware_custom
-                                    if (not audiobookshelf_traefik_middleware_custom.startswith(',') and audiobookshelf_traefik_middleware_custom | length > 0)
-                                    else audiobookshelf_traefik_middleware_default
-                                       + audiobookshelf_traefik_middleware_custom }}"
-
 audiobookshelf_traefik_certresolver: "{{ traefik_default_certresolver }}"
 audiobookshelf_traefik_enabled: true
 
@@ -86,6 +77,7 @@ audiobookshelf_docker_ports: "{{ lookup('vars', audiobookshelf_name + '_docker_p
 
 # Envs
 audiobookshelf_docker_envs_default:
+  TZ: "{{ tz }}"
   AUDIOBOOKSHELF_UID: "{{ uid }}"
   AUDIOBOOKSHELF_GID: "{{ gid }}"
 audiobookshelf_docker_envs_custom: {}
@@ -96,14 +88,14 @@ audiobookshelf_docker_envs: "{{ lookup('vars', audiobookshelf_name + '_docker_en
 audiobookshelf_docker_commands_default: []
 audiobookshelf_docker_commands_custom: []
 audiobookshelf_docker_commands: "{{ lookup('vars', audiobookshelf_name + '_docker_commands_default', default=audiobookshelf_docker_commands_default)
-                                    + lookup('vars', audiobookshelf_name + '_docker_docker_commands_custom', default=audiobookshelf_docker_commands_custom) }}"
+                                    + lookup('vars', audiobookshelf_name + '_docker_commands_custom', default=audiobookshelf_docker_commands_custom) }}"
 
 # Volumes
 audiobookshelf_docker_volumes_default:
   - "{{ audiobookshelf_paths_location }}/config:/config"
   - "{{ audiobookshelf_paths_location }}/metadata:/metadata"
-  - "/mnt/unionfs/Media/audiobooks:/audiobooks"
-  - "/mnt/unionfs/Media/podcasts:/podcasts"
+  - "/mnt/unionfs/Media/Audiobooks:/audiobooks"
+  - "/mnt/unionfs/Media/Podcasts:/podcasts"
 audiobookshelf_docker_volumes_custom: []
 audiobookshelf_docker_volumes: "{{ lookup('vars', audiobookshelf_name + '_docker_volumes_default', default=audiobookshelf_docker_volumes_default)
                                    + lookup('vars', audiobookshelf_name + '_docker_volumes_custom', default=audiobookshelf_docker_volumes_custom) }}"

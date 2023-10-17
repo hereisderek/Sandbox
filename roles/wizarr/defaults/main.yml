@@ -29,7 +29,9 @@ wizarr_paths_folders_list:
 wizarr_web_subdomain: "{{ wizarr_name }}"
 wizarr_web_domain: "{{ user.domain }}"
 wizarr_web_port: "5690"
-wizarr_web_url: "{{ 'https://' + wizarr_web_subdomain + '.' + wizarr_web_domain }}"
+wizarr_web_url: "{{ 'https://' + (wizarr_web_subdomain + '.' + wizarr_web_domain
+                 if (wizarr_web_subdomain | length > 0)
+                 else wizarr_web_domain) }}"
 
 ################################
 # DNS
@@ -44,13 +46,12 @@ wizarr_dns_proxy: "{{ dns.proxied }}"
 ################################
 
 wizarr_traefik_sso_middleware: "{{ traefik_default_sso_middleware }}"
-wizarr_traefik_middleware: "{{ traefik_default_middleware + ',' + wizarr_traefik_sso_middleware
-                            if (wizarr_traefik_sso_middleware | length > 0)
-                            else traefik_default_middleware }}"
+wizarr_traefik_middleware_default: "{{ traefik_default_middleware }}"
+wizarr_traefik_middleware_custom: ""
 wizarr_traefik_certresolver: "{{ traefik_default_certresolver }}"
 wizarr_traefik_enabled: true
 wizarr_traefik_api_enabled: true
-wizarr_traefik_api_endpoint: "`/join`,`/j`,`/setup`,`/static`"
+wizarr_traefik_api_endpoint: "PathPrefix(`/join`) || PathPrefix(`/j`) || PathPrefix(`/setup`) || PathPrefix(`/static`)"
 
 ################################
 # Docker
@@ -61,8 +62,10 @@ wizarr_docker_container: "{{ wizarr_name }}"
 
 # Image
 wizarr_docker_image_pull: true
+wizarr_docker_image_repo: "ghcr.io/wizarrrr/wizarr"
 wizarr_docker_image_tag: "latest"
-wizarr_docker_image: "ghcr.io/wizarrrr/wizarr"
+wizarr_docker_image: "{{ wizarr_docker_image_repo
+                         + ':' + wizarr_docker_image_tag }}"
 
 # Ports
 wizarr_docker_ports_defaults: []

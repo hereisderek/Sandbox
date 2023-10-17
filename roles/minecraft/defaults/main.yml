@@ -66,7 +66,7 @@ minecraft_docker_envs: "{{ lookup('vars', minecraft_name + '_docker_envs_default
 minecraft_docker_commands_default: []
 minecraft_docker_commands_custom: []
 minecraft_docker_commands: "{{ lookup('vars', minecraft_name + '_docker_commands_default', default=minecraft_docker_commands_default)
-                               + lookup('vars', minecraft_name + '_docker_docker_commands_custom', default=minecraft_docker_commands_custom) }}"
+                               + lookup('vars', minecraft_name + '_docker_commands_custom', default=minecraft_docker_commands_custom) }}"
 
 # Volumes
 minecraft_docker_volumes_default:
@@ -97,6 +97,10 @@ minecraft_docker_labels: "{{ docker_labels_common
 
 # Hostname
 minecraft_docker_hostname: "{{ minecraft_name }}"
+
+# Network Mode
+minecraft_docker_network_mode_default: "{{ docker_networks_name_common }}"
+minecraft_docker_network_mode: "{{ lookup('vars', minecraft_name + '_docker_network_mode_default', default=minecraft_docker_network_mode_default) }}"
 
 # Networks
 minecraft_docker_networks_alias: "{{ minecraft_name }}"

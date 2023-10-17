@@ -41,7 +41,9 @@ homepage_paths_folders_list:
 homepage_web_subdomain: "{{ homepage_name }}"
 homepage_web_domain: "{{ user.domain }}"
 homepage_web_port: "3000"
-homepage_web_url: "{{ 'https://' + homepage_web_subdomain + '.' + homepage_web_domain }}"
+homepage_web_url: "{{ 'https://' + (homepage_web_subdomain + '.' + homepage_web_domain
+                   if (homepage_web_subdomain | length > 0)
+                   else homepage_web_domain) }}"
 
 ################################
 # DNS
@@ -56,18 +58,12 @@ homepage_dns_proxy: "{{ dns.proxied }}"
 ################################
 
 homepage_traefik_sso_middleware: "{{ traefik_default_sso_middleware }}"
-homepage_traefik_middleware_default: "{{ traefik_default_middleware + ','
-                                         + lookup('vars', homepage_name + '_traefik_sso_middleware', default=homepage_traefik_sso_middleware)
-                                      if (lookup('vars', homepage_name + '_traefik_sso_middleware', default=homepage_traefik_sso_middleware) | length > 0)
-                                      else traefik_default_middleware }}"
+homepage_traefik_middleware_default: "{{ traefik_default_middleware }}"
 homepage_traefik_middleware_custom: ""
-homepage_traefik_middleware: "{{ homepage_traefik_middleware_default + ','
-                                 + homepage_traefik_middleware_custom
-                              if (not homepage_traefik_middleware_custom.startswith(',') and homepage_traefik_middleware_custom | length > 0)
-                              else homepage_traefik_middleware_default
-                                 + homepage_traefik_middleware_custom }}"
 homepage_traefik_certresolver: "{{ traefik_default_certresolver }}"
 homepage_traefik_enabled: true
+homepage_traefik_api_enabled: false
+homepage_traefik_api_endpoint: ""
 
 ################################
 # Docker
@@ -79,7 +75,7 @@ homepage_docker_container: "{{ homepage_name }}"
 # Image
 homepage_docker_image_pull: true
 homepage_docker_image_tag: "latest"
-homepage_docker_image: "ghcr.io/benphelps/homepage:{{ homepage_docker_image_tag }}"
+homepage_docker_image: "ghcr.io/gethomepage/homepage:{{ homepage_docker_image_tag }}"
 
 # Ports
 homepage_docker_ports_defaults: []

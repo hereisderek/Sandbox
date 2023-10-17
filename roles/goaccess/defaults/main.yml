@@ -29,7 +29,9 @@ goaccess_paths_folders_list:
 goaccess_web_subdomain: "{{ goaccess_name }}"
 goaccess_web_domain: "{{ user.domain }}"
 goaccess_web_port: "7889"
-goaccess_web_url: "{{ 'https://' + goaccess_web_subdomain + '.' + goaccess_web_domain }}"
+goaccess_web_url: "{{ 'https://' + (goaccess_web_subdomain + '.' + goaccess_web_domain
+                   if (goaccess_web_subdomain | length > 0)
+                   else goaccess_web_domain) }}"
 
 ################################
 # DNS
@@ -44,11 +46,12 @@ goaccess_dns_proxy: "{{ dns.proxied }}"
 ################################
 
 goaccess_traefik_sso_middleware: "{{ traefik_default_sso_middleware }}"
-goaccess_traefik_middleware: "{{ traefik_default_middleware + ',' + goaccess_traefik_sso_middleware
-                              if (goaccess_traefik_sso_middleware | length > 0)
-                              else traefik_default_middleware }}"
+goaccess_traefik_middleware_default: "{{ traefik_default_middleware }}"
+goaccess_traefik_middleware_custom: ""
 goaccess_traefik_certresolver: "{{ traefik_default_certresolver }}"
 goaccess_traefik_enabled: true
+goaccess_traefik_api_enabled: false
+goaccess_traefik_api_endpoint: ""
 
 ################################
 # Docker

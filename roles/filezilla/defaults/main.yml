@@ -30,7 +30,9 @@ filezilla_paths_folders_list:
 filezilla_web_subdomain: "{{ filezilla_name }}"
 filezilla_web_domain: "{{ user.domain }}"
 filezilla_web_port: "5800"
-filezilla_web_url: "{{ 'https://' + filezilla_web_subdomain + '.' + filezilla_web_domain }}"
+filezilla_web_url: "{{ 'https://' + (filezilla_web_subdomain + '.' + filezilla_web_domain
+                    if (filezilla_web_subdomain | length > 0)
+                    else filezilla_web_domain) }}"
 
 ################################
 # DNS
@@ -44,10 +46,13 @@ filezilla_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-filezilla_traefik_middleware: "filezilla-auth,{{ traefik_default_middleware }}"
+filezilla_traefik_sso_middleware: "{{ traefik_default_sso_middleware }}"
+filezilla_traefik_middleware_default: "{{ traefik_default_middleware }}"
+filezilla_traefik_middleware_custom: ""
 filezilla_traefik_certresolver: "{{ traefik_default_certresolver }}"
 filezilla_traefik_enabled: true
-filezilla_auth: "/etc/traefik/auth"
+filezilla_traefik_api_enabled: false
+filezilla_traefik_api_endpoint: ""
 
 ################################
 # Docker
@@ -105,8 +110,7 @@ filezilla_docker_hosts: "{{ docker_hosts_common
                             | combine(filezilla_docker_hosts_custom) }}"
 
 # Labels
-filezilla_docker_labels_default:
-  traefik.http.middlewares.filezilla-auth.basicauth.usersfile: "{{ filezilla_auth }}"
+filezilla_docker_labels_default: {}
 filezilla_docker_labels_custom: {}
 filezilla_docker_labels: "{{ docker_labels_common
                              | combine(filezilla_docker_labels_default)

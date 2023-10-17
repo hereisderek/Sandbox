@@ -29,7 +29,9 @@ linkding_paths_folders_list:
 linkding_web_subdomain: "{{ linkding_name }}"
 linkding_web_domain: "{{ user.domain }}"
 linkding_web_port: "9090"
-linkding_web_url: "{{ 'https://' + linkding_web_subdomain + '.' + linkding_web_domain }}"
+linkding_web_url: "{{ 'https://' + (linkding_web_subdomain + '.' + linkding_web_domain
+                   if (linkding_web_subdomain | length > 0)
+                   else linkding_web_domain) }}"
 
 ################################
 # DNS
@@ -44,13 +46,14 @@ linkding_dns_proxy: "{{ dns.proxied }}"
 ################################
 
 linkding_traefik_sso_middleware: "{{ traefik_default_sso_middleware }}"
-linkding_traefik_middleware: "{{ traefik_default_middleware + ',' + linkding_traefik_sso_middleware
-                              if (linkding_traefik_sso_middleware | length > 0)
-                              else traefik_default_middleware }}"
+linkding_traefik_middleware_default: "{{ traefik_default_middleware }}"
+linkding_traefik_middleware_custom: ""
 linkding_traefik_certresolver: "{{ traefik_default_certresolver }}"
 linkding_traefik_enabled: true
 linkding_traefik_api_enabled: true
-linkding_traefik_api_endpoint: "`/api`"
+linkding_traefik_api_endpoint: "PathPrefix(`/api`)"
+linkding_traefik_api_middleware_http: "{{ 'dropsecurityheaders@file,' + traefik_default_middleware_http_api }}"
+linkding_traefik_api_middleware: "{{ 'dropsecurityheaders@file,' + traefik_default_middleware_api }}"
 
 ################################
 # Docker

@@ -30,7 +30,9 @@ mylar3_paths_folders_list:
 mylar3_web_subdomain: "{{ mylar3_name }}"
 mylar3_web_domain: "{{ user.domain }}"
 mylar3_web_port: "8090"
-mylar3_web_url: "{{ 'https://' + mylar3_web_subdomain + '.' + mylar3_web_domain }}"
+mylar3_web_url: "{{ 'https://' + (mylar3_web_subdomain + '.' + mylar3_web_domain
+                 if (mylar3_web_subdomain | length > 0)
+                 else mylar3_web_domain) }}"
 
 ################################
 # DNS
@@ -44,9 +46,13 @@ mylar3_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-mylar3_traefik_middleware: "{{ traefik_default_middleware }}"
+mylar3_traefik_sso_middleware: ""
+mylar3_traefik_middleware_default: "{{ traefik_default_middleware }}"
+mylar3_traefik_middleware_custom: ""
 mylar3_traefik_certresolver: "{{ traefik_default_certresolver }}"
 mylar3_traefik_enabled: true
+mylar3_traefik_api_enabled: false
+mylar3_traefik_api_endpoint: ""
 
 ################################
 # Docker

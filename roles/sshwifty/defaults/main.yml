@@ -31,7 +31,9 @@ sshwifty_paths_config_location: "{{ sshwifty_paths_location }}/config/sshwifty.c
 sshwifty_web_subdomain: "{{ sshwifty_name }}"
 sshwifty_web_domain: "{{ user.domain }}"
 sshwifty_web_port: "8182"
-sshwifty_web_url: "{{ 'https://' + sshwifty_web_subdomain + '.' + sshwifty_web_domain }}"
+sshwifty_web_url: "{{ 'https://' + (sshwifty_web_subdomain + '.' + sshwifty_web_domain
+                   if (sshwifty_web_subdomain | length > 0)
+                   else sshwifty_web_domain) }}"
 
 ################################
 # DNS
@@ -45,9 +47,13 @@ sshwifty_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-sshwifty_traefik_middleware: "{{ traefik_default_middleware }}"
+sshwifty_traefik_sso_middleware: ""
+sshwifty_traefik_middleware_default: "{{ traefik_default_middleware }}"
+sshwifty_traefik_middleware_custom: ""
 sshwifty_traefik_certresolver: "{{ traefik_default_certresolver }}"
 sshwifty_traefik_enabled: true
+sshwifty_traefik_api_enabled: false
+sshwifty_traefik_api_endpoint: ""
 sshwifty_traefik_error_pages_enabled: false
 
 ################################

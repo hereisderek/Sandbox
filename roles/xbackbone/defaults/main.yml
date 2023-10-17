@@ -29,7 +29,9 @@ xbackbone_paths_folders_list:
 xbackbone_web_subdomain: "{{ xbackbone_name }}"
 xbackbone_web_domain: "{{ user.domain }}"
 xbackbone_web_port: "80"
-xbackbone_web_url: "{{ 'https://' + xbackbone_web_subdomain + '.' + xbackbone_web_domain }}"
+xbackbone_web_url: "{{ 'https://' + (xbackbone_web_subdomain + '.' + xbackbone_web_domain
+                    if (xbackbone_web_subdomain | length > 0)
+                    else xbackbone_web_domain) }}"
 
 ################################
 # DNS
@@ -43,9 +45,13 @@ xbackbone_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-xbackbone_traefik_middleware: "{{ traefik_default_middleware }}"
+xbackbone_traefik_sso_middleware: ""
+xbackbone_traefik_middleware_default: "{{ traefik_default_middleware }}"
+xbackbone_traefik_middleware_custom: ""
 xbackbone_traefik_certresolver: "{{ traefik_default_certresolver }}"
 xbackbone_traefik_enabled: true
+xbackbone_traefik_api_enabled: false
+xbackbone_traefik_api_endpoint: ""
 
 ################################
 # Docker

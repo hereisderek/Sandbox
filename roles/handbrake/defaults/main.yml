@@ -31,7 +31,9 @@ handbrake_paths_folders_list:
 handbrake_web_subdomain: "{{ handbrake_name }}"
 handbrake_web_domain: "{{ user.domain }}"
 handbrake_web_port: "5800"
-handbrake_web_url: "{{ 'https://' + handbrake_web_subdomain + '.' + handbrake_web_domain }}"
+handbrake_web_url: "{{ 'https://' + (handbrake_web_subdomain + '.' + handbrake_web_domain
+                    if (handbrake_web_subdomain | length > 0)
+                    else handbrake_web_domain) }}"
 
 ################################
 # DNS
@@ -45,9 +47,13 @@ handbrake_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-handbrake_traefik_middleware: "{{ traefik_default_middleware }}"
+handbrake_traefik_sso_middleware: ""
+handbrake_traefik_middleware_default: "{{ traefik_default_middleware }}"
+handbrake_traefik_middleware_custom: ""
 handbrake_traefik_certresolver: "{{ traefik_default_certresolver }}"
 handbrake_traefik_enabled: true
+handbrake_traefik_api_enabled: false
+handbrake_traefik_api_endpoint: ""
 
 ################################
 # Docker

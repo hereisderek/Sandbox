@@ -32,7 +32,9 @@ photoprism_paths_folders_list:
 photoprism_web_subdomain: "{{ photoprism_name }}"
 photoprism_web_domain: "{{ user.domain }}"
 photoprism_web_port: "2342"
-photoprism_web_url: "{{ 'https://' + photoprism_web_subdomain + '.' + photoprism_web_domain }}"
+photoprism_web_url: "{{ 'https://' + (photoprism_web_subdomain + '.' + photoprism_web_domain
+                     if (photoprism_web_subdomain | length > 0)
+                     else photoprism_web_domain) }}"
 
 ################################
 # DNS
@@ -47,14 +49,12 @@ photoprism_dns_proxy: "{{ dns.proxied }}"
 ################################
 
 photoprism_traefik_sso_middleware: "{{ traefik_default_sso_middleware }}"
-photoprism_traefik_api_enabled: true
-photoprism_traefik_api_endpoint: "`/api`"
-
-photoprism_traefik_middleware: "{{ traefik_default_middleware + ',' + photoprism_traefik_sso_middleware
-                                if (photoprism_traefik_sso_middleware | length > 0)
-                                else traefik_default_middleware }}"
+photoprism_traefik_middleware_default: "{{ traefik_default_middleware }}"
+photoprism_traefik_middleware_custom: ""
 photoprism_traefik_certresolver: "{{ traefik_default_certresolver }}"
 photoprism_traefik_enabled: true
+photoprism_traefik_api_enabled: false
+photoprism_traefik_api_endpoint: ""
 
 ################################
 # Docker
@@ -124,8 +124,7 @@ photoprism_docker_volumes: "{{ photoprism_docker_volumes_default
                                + photoprism_docker_volumes_custom }}"
 
 # Devices
-photoprism_docker_devices_default:
-  - "/dev/dri:/dev/dri"
+photoprism_docker_devices_default: []
 photoprism_docker_devices_custom: []
 photoprism_docker_devices: "{{ photoprism_docker_devices_default
                                + photoprism_docker_devices_custom }}"
@@ -163,8 +162,8 @@ photoprism_docker_capabilities: "{{ photoprism_docker_capabilities_default
 
 # Security Opts
 photoprism_docker_security_opts_default:
-  - "seccomp:unconfined"
-  - "apparmor:unconfined"
+  - "seccomp=unconfined"
+  - "apparmor=unconfined"
 photoprism_docker_security_opts_custom: []
 photoprism_docker_security_opts: "{{ photoprism_docker_security_opts_default
                                      + photoprism_docker_security_opts_custom }}"

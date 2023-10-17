@@ -29,7 +29,9 @@ syncthing_paths_folders_list:
 syncthing_web_subdomain: "{{ syncthing_name }}"
 syncthing_web_domain: "{{ user.domain }}"
 syncthing_web_port: "8384"
-syncthing_web_url: "{{ 'https://' + syncthing_web_subdomain + '.' + syncthing_web_domain }}"
+syncthing_web_url: "{{ 'https://' + (syncthing_web_subdomain + '.' + syncthing_web_domain
+                    if (syncthing_web_subdomain | length > 0)
+                    else syncthing_web_domain) }}"
 
 ################################
 # DNS
@@ -43,9 +45,13 @@ syncthing_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-syncthing_traefik_middleware: "{{ traefik_default_middleware }}"
+syncthing_traefik_sso_middleware: "{{ traefik_default_sso_middleware }}"
+syncthing_traefik_middleware_default: "{{ traefik_default_middleware }}"
+syncthing_traefik_middleware_custom: ""
 syncthing_traefik_certresolver: "{{ traefik_default_certresolver }}"
 syncthing_traefik_enabled: true
+syncthing_traefik_api_enabled: false
+syncthing_traefik_api_endpoint: ""
 
 ################################
 # Docker

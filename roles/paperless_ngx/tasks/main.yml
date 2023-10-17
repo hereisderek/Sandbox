@@ -12,7 +12,7 @@
   ansible.builtin.include_role:
     name: redis
   vars:
-    redis_name: "{{ paperless_ngx_name }}_redis"
+    redis_instances: ["{{ paperless_ngx_name }}_redis"]
     redis_docker_image_tag: "7-alpine"
     redis_paths_folder: "{{ paperless_ngx_name }}"
     redis_paths_location: "{{ server_appdata_path }}/{{ redis_paths_folder }}/redis"
@@ -21,7 +21,7 @@
   ansible.builtin.include_role:
     name: postgres
   vars:
-    postgres_name: "{{ paperless_ngx_name }}_postgres"
+    postgres_instances: ["{{ paperless_ngx_name }}_postgres"]
     postgres_docker_env_db: "{{ paperless_ngx_name }}"
     postgres_docker_image_tag: "14-alpine"
     postgres_paths_folder: "{{ paperless_ngx_name }}"
@@ -32,16 +32,14 @@
     name: gotenberg
   vars:
     gotenberg_name: "{{ paperless_ngx_name }}_gotenberg"
-    gotenberg_docker_image_tag: "7-cloudrun"
+    gotenberg_docker_image_tag: "7.8"
     gotenberg_docker_commands_default:
       - "gotenberg"
-      - "--chromium-disable-routes=true"
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
       - "--api-timeout=300s"
-      - "--uno-listener-restart-threshold=0"
       - "--uno-listener-restart-threshold=300"
       - "--uno-listener-start-timeout=300s"
-    gotenberg_paths_folder: "{{ paperless_ngx_name }}"
-    gotenberg_paths_location: "{{ server_appdata_path }}/{{ gotenberg_paths_folder }}/gotenberg"
 
 - name: Tika Role
   ansible.builtin.include_role:
@@ -49,8 +47,6 @@
   vars:
     tika_name: "{{ paperless_ngx_name }}_tika"
     tika_docker_image_tag: "latest"
-    tika_paths_folder: "{{ paperless_ngx_name }}"
-    tika_paths_location: "{{ server_appdata_path }}/{{ tika_paths_folder }}/tika"
 
 - name: "Generate Secret Key for sessions"
   ansible.builtin.shell: "openssl rand -base64 45"

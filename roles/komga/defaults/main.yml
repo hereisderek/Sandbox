@@ -30,7 +30,9 @@ komga_paths_folders_list:
 komga_web_subdomain: "{{ komga_name }}"
 komga_web_domain: "{{ user.domain }}"
 komga_web_port: "25600"
-komga_web_url: "{{ 'https://' + komga_web_subdomain + '.' + komga_web_domain }}"
+komga_web_url: "{{ 'https://' + (komga_web_subdomain + '.' + komga_web_domain
+                if (komga_web_subdomain | length > 0)
+                else komga_web_domain) }}"
 
 ################################
 # DNS
@@ -44,9 +46,13 @@ komga_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-komga_traefik_middleware: "{{ traefik_default_middleware }}"
+komga_traefik_sso_middleware: ""
+komga_traefik_middleware_default: "{{ traefik_default_middleware }}"
+komga_traefik_middleware_custom: ""
 komga_traefik_certresolver: "{{ traefik_default_certresolver }}"
 komga_traefik_enabled: true
+komga_traefik_api_enabled: false
+komga_traefik_api_endpoint: ""
 
 ################################
 # Docker

@@ -20,7 +20,9 @@ adminer_name: adminer
 adminer_web_subdomain: "{{ adminer_name }}"
 adminer_web_domain: "{{ user.domain }}"
 adminer_web_port: "8080"
-adminer_web_url: "{{ 'https://' + adminer_web_subdomain + '.' + adminer_web_domain }}"
+adminer_web_url: "{{ 'https://' + (adminer_web_subdomain + '.' + adminer_web_domain
+                  if (adminer_web_subdomain | length > 0)
+                  else adminer_web_domain) }}"
 
 ################################
 # DNS
@@ -35,9 +37,8 @@ adminer_dns_proxy: "{{ dns.proxied }}"
 ################################
 
 adminer_traefik_sso_middleware: "{{ traefik_default_sso_middleware }}"
-adminer_traefik_middleware: "{{ traefik_default_middleware + ',' + adminer_traefik_sso_middleware
-                             if (adminer_traefik_sso_middleware | length > 0)
-                             else traefik_default_middleware }}"
+adminer_traefik_middleware_default: "{{ traefik_default_middleware }}"
+adminer_traefik_middleware_custom: ""
 adminer_traefik_certresolver: "{{ traefik_default_certresolver }}"
 adminer_traefik_enabled: true
 

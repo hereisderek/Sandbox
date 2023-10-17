@@ -26,17 +26,15 @@
   register: dashy_config
 
 - name: New `{{ dashy_paths_config_location | basename }}` tasks
+  when: not dashy_config.stat.exists
   block:
-
     - name: Import default `{{ dashy_paths_config_location | basename }}`
       ansible.builtin.template:
         src: conf.yml.j2
         dest: "{{ dashy_paths_config_location }}"
         owner: "{{ user.name }}"
         group: "{{ user.name }}"
-        mode: 0775
-
-  when: not dashy_config.stat.exists
+        mode: "0775"
 
 - name: Create Docker container
   ansible.builtin.include_tasks: "{{ resources_tasks_path }}/docker/create_docker_container.yml"

@@ -30,7 +30,9 @@ healthchecks_paths_config_location: "{{ healthchecks_paths_location }}/local_set
 healthchecks_web_subdomain: "{{ healthchecks_name }}"
 healthchecks_web_domain: "{{ user.domain }}"
 healthchecks_web_port: "8000"
-healthchecks_web_url: "{{ 'https://' + healthchecks_web_subdomain + '.' + healthchecks_web_domain }}"
+healthchecks_web_url: "{{ 'https://' + (healthchecks_web_subdomain + '.' + healthchecks_web_domain
+                       if (healthchecks_web_subdomain | length > 0)
+                       else healthchecks_web_domain) }}"
 
 ################################
 # DNS
@@ -44,9 +46,13 @@ healthchecks_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-healthchecks_traefik_middleware: "{{ traefik_default_middleware }}"
+healthchecks_traefik_sso_middleware: ""
+healthchecks_traefik_middleware_default: "{{ traefik_default_middleware }}"
+healthchecks_traefik_middleware_custom: ""
 healthchecks_traefik_certresolver: "{{ traefik_default_certresolver }}"
 healthchecks_traefik_enabled: true
+healthchecks_traefik_api_enabled: false
+healthchecks_traefik_api_endpoint: ""
 
 ################################
 # Docker

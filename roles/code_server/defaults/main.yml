@@ -32,7 +32,9 @@ code_server_paths_folders_list:
 code_server_web_subdomain: "{{ code_server_name }}"
 code_server_web_domain: "{{ user.domain }}"
 code_server_web_port: "8080"
-code_server_web_url: "{{ 'https://' + code_server_web_subdomain + '.' + code_server_web_domain }}"
+code_server_web_url: "{{ 'https://' + (code_server_web_subdomain + '.' + code_server_web_domain
+                      if (code_server_web_subdomain | length > 0)
+                      else code_server_web_domain) }}"
 
 ################################
 # DNS
@@ -46,7 +48,9 @@ code_server_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-code_server_traefik_middleware: "{{ traefik_default_middleware }}"
+code_server_traefik_sso_middleware: "{{ traefik_default_sso_middleware }}"
+code_server_traefik_middleware_default: "{{ traefik_default_middleware }}"
+code_server_traefik_middleware_custom: ""
 code_server_traefik_certresolver: "{{ traefik_default_certresolver }}"
 code_server_traefik_enabled: true
 

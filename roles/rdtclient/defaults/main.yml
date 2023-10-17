@@ -35,7 +35,9 @@ rdtclient_paths_folders_list:
 rdtclient_web_subdomain: "{{ rdtclient_name }}"
 rdtclient_web_domain: "{{ user.domain }}"
 rdtclient_web_port: "6500"
-rdtclient_web_url: "{{ 'https://' + rdtclient_web_subdomain + '.' + rdtclient_web_domain }}"
+rdtclient_web_url: "{{ 'https://' + (rdtclient_web_subdomain + '.' + rdtclient_web_domain
+                    if (rdtclient_web_subdomain | length > 0)
+                    else rdtclient_web_domain) }}"
 
 ################################
 # DNS
@@ -49,9 +51,13 @@ rdtclient_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-rdtclient_traefik_middleware: "{{ traefik_default_middleware }}"
+rdtclient_traefik_sso_middleware: ""
+rdtclient_traefik_middleware_default: "{{ traefik_default_middleware }}"
+rdtclient_traefik_middleware_custom: ""
 rdtclient_traefik_certresolver: "{{ traefik_default_certresolver }}"
 rdtclient_traefik_enabled: true
+rdtclient_traefik_api_enabled: false
+rdtclient_traefik_api_endpoint: ""
 
 ################################
 # Docker

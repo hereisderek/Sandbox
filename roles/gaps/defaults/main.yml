@@ -29,7 +29,9 @@ gaps_paths_folders_list:
 gaps_web_subdomain: "{{ gaps_name }}"
 gaps_web_domain: "{{ user.domain }}"
 gaps_web_port: "8484"
-gaps_web_url: "{{ 'https://' + gaps_web_subdomain + '.' + gaps_web_domain }}"
+gaps_web_url: "{{ 'https://' + (gaps_web_subdomain + '.' + gaps_web_domain
+               if (gaps_web_subdomain | length > 0)
+               else gaps_web_domain) }}"
 
 ################################
 # DNS
@@ -44,18 +46,12 @@ gaps_dns_proxy: "{{ dns.proxied }}"
 ################################
 
 gaps_traefik_sso_middleware: "{{ traefik_default_sso_middleware }}"
-gaps_traefik_middleware_default: "{{ traefik_default_middleware + ','
-                                     + lookup('vars', gaps_name + '_traefik_sso_middleware', default=gaps_traefik_sso_middleware)
-                                  if (lookup('vars', gaps_name + '_traefik_sso_middleware', default=gaps_traefik_sso_middleware) | length > 0)
-                                  else traefik_default_middleware }}"
+gaps_traefik_middleware_default: "{{ traefik_default_middleware }}"
 gaps_traefik_middleware_custom: ""
-gaps_traefik_middleware: "{{ gaps_traefik_middleware_default + ','
-                             + gaps_traefik_middleware_custom
-                          if (not gaps_traefik_middleware_custom.startswith(',') and gaps_traefik_middleware_custom | length > 0)
-                          else gaps_traefik_middleware_default
-                             + gaps_traefik_middleware_custom }}"
 gaps_traefik_certresolver: "{{ traefik_default_certresolver }}"
 gaps_traefik_enabled: true
+gaps_traefik_api_enabled: false
+gaps_traefik_api_endpoint: ""
 
 ################################
 # Docker
@@ -70,8 +66,7 @@ gaps_docker_image_tag: "latest"
 gaps_docker_image: "housewrecker/gaps:{{ gaps_docker_image_tag }}"
 
 # Ports
-gaps_docker_ports_defaults:
-  - "{{ gaps_web_port }}"
+gaps_docker_ports_defaults: []
 gaps_docker_ports_custom: []
 gaps_docker_ports: "{{ gaps_docker_ports_defaults
                        + gaps_docker_ports_custom }}"
@@ -103,7 +98,7 @@ gaps_docker_volumes: "{{ gaps_docker_volumes_default
 gaps_docker_devices_default: []
 gaps_docker_devices_custom: []
 gaps_docker_devices: "{{ gaps_docker_devices_default
-                        + gaps_docker_devices_custom }}"
+                         + gaps_docker_devices_custom }}"
 
 # Hosts
 gaps_docker_hosts_default: []

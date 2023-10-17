@@ -29,7 +29,9 @@ kavita_paths_folders_list:
 kavita_web_subdomain: "{{ kavita_name }}"
 kavita_web_domain: "{{ user.domain }}"
 kavita_web_port: "5000"
-kavita_web_url: "{{ 'https://' + kavita_web_subdomain + '.' + kavita_web_domain }}"
+kavita_web_url: "{{ 'https://' + (kavita_web_subdomain + '.' + kavita_web_domain
+                 if (kavita_web_subdomain | length > 0)
+                 else kavita_web_domain) }}"
 
 ################################
 # DNS
@@ -43,9 +45,13 @@ kavita_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-kavita_traefik_middleware: "{{ traefik_default_middleware }}"
+kavita_traefik_sso_middleware: ""
+kavita_traefik_middleware_default: "{{ traefik_default_middleware }}"
+kavita_traefik_middleware_custom: ""
 kavita_traefik_certresolver: "{{ traefik_default_certresolver }}"
 kavita_traefik_enabled: true
+kavita_traefik_api_enabled: false
+kavita_traefik_api_endpoint: ""
 
 ################################
 # Docker

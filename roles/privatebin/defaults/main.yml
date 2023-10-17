@@ -29,7 +29,9 @@ privatebin_paths_folders_list:
 privatebin_web_subdomain: "{{ privatebin_name }}"
 privatebin_web_domain: "{{ user.domain }}"
 privatebin_web_port: "8080"
-privatebin_web_url: "{{ 'https://' + privatebin_web_subdomain + '.' + privatebin_web_domain }}"
+privatebin_web_url: "{{ 'https://' + (privatebin_web_subdomain + '.' + privatebin_web_domain
+                     if (privatebin_web_subdomain | length > 0)
+                     else privatebin_web_domain) }}"
 
 ################################
 # DNS
@@ -43,9 +45,13 @@ privatebin_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-privatebin_traefik_middleware: "{{ traefik_default_middleware }}"
+privatebin_traefik_sso_middleware: ""
+privatebin_traefik_middleware_default: "{{ traefik_default_middleware }}"
+privatebin_traefik_middleware_custom: ""
 privatebin_traefik_certresolver: "{{ traefik_default_certresolver }}"
 privatebin_traefik_enabled: true
+privatebin_traefik_api_enabled: false
+privatebin_traefik_api_endpoint: ""
 
 ################################
 # Docker

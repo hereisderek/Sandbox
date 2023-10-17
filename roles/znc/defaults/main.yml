@@ -29,7 +29,9 @@ znc_paths_folders_list:
 znc_web_subdomain: "{{ znc_name }}"
 znc_web_domain: "{{ user.domain }}"
 znc_web_port: "6501"
-znc_web_url: "{{ 'https://' + znc_web_subdomain + '.' + znc_web_domain }}"
+znc_web_url: "{{ 'https://' + (znc_web_subdomain + '.' + znc_web_domain
+              if (znc_web_subdomain | length > 0)
+              else znc_web_domain) }}"
 
 ################################
 # DNS
@@ -43,9 +45,13 @@ znc_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-znc_traefik_middleware: "{{ traefik_default_middleware }}"
+znc_traefik_sso_middleware: ""
+znc_traefik_middleware_default: "{{ traefik_default_middleware }}"
+znc_traefik_middleware_custom: ""
 znc_traefik_certresolver: "{{ traefik_default_certresolver }}"
 znc_traefik_enabled: true
+znc_traefik_api_enabled: false
+znc_traefik_api_endpoint: ""
 
 ################################
 # Docker

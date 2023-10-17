@@ -30,7 +30,9 @@ docspell_paths_folders_list:
 docspell_web_subdomain: "{{ docspell_name }}"
 docspell_web_domain: "{{ user.domain }}"
 docspell_web_port: "7880"
-docspell_web_url: "{{ 'https://' + docspell_web_subdomain + '.' + docspell_web_domain }}"
+docspell_web_url: "{{ 'https://' + (docspell_web_subdomain + '.' + docspell_web_domain
+                   if (docspell_web_subdomain | length > 0)
+                   else docspell_web_domain) }}"
 
 ################################
 # DNS
@@ -45,20 +47,12 @@ docspell_dns_proxy: "{{ dns.proxied }}"
 ################################
 
 docspell_traefik_sso_middleware: "{{ traefik_default_sso_middleware }}"
-docspell_traefik_middleware_default: "{{ traefik_default_middleware + ','
-                                           + lookup('vars', docspell_name + '_traefik_sso_middleware', default=docspell_traefik_sso_middleware)
-                                        if (lookup('vars', docspell_name + '_traefik_sso_middleware', default=docspell_traefik_sso_middleware) | length > 0)
-                                        else traefik_default_middleware }}"
+docspell_traefik_middleware_default: "{{ traefik_default_middleware }}"
 docspell_traefik_middleware_custom: ""
-docspell_traefik_middleware: "{{ docspell_traefik_middleware_default + ','
-                                 + docspell_traefik_middleware_custom
-                              if (not docspell_traefik_middleware_custom.startswith(',') and docspell_traefik_middleware_custom | length > 0)
-                              else docspell_traefik_middleware_default
-                                 + docspell_traefik_middleware_custom }}"
 docspell_traefik_certresolver: "{{ traefik_default_certresolver }}"
 docspell_traefik_enabled: true
 docspell_traefik_api_enabled: true
-docspell_traefik_api_endpoint: "`/api`"
+docspell_traefik_api_endpoint: "PathPrefix(`/api`)"
 
 ################################
 # Docker
@@ -84,7 +78,7 @@ docspell_docker_envs_default:
   DOCSPELL_SERVER_INTERNAL__URL: "http://{{ docspell_name }}:{{ docspell_web_port }}"
   DOCSPELL_SERVER_ADMIN__ENDPOINT_SECRET: "{{ docspell_admin_key.stdout }}"
   # DOCSPELL_SERVER_AUTH_SERVER__SECRET: ""
-  DOCSPELL_SERVER_BACKEND_JDBC_PASSWORD: "{{ mariadb_docker_envs_mysql_root_password }}"
+  DOCSPELL_SERVER_BACKEND_JDBC_PASSWORD: "{{ mariadb_docker_env_password }}"
   DOCSPELL_SERVER_BACKEND_JDBC_URL: "jdbc:mariadb://{{ docspell_name }}_mariadb:3306/{{ docspell_name }}"
   DOCSPELL_SERVER_BACKEND_JDBC_USER: "root"
   DOCSPELL_SERVER_BIND_ADDRESS: "0.0.0.0"

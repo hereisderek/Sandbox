@@ -12,14 +12,12 @@
   register: logarr_config
 
 - name: Settings | New `{{ logarr_paths_config_location | basename }}` tasks
+  when: not logarr_config.stat.exists
   block:
-
     - name: Settings | Import default `{{ logarr_paths_config_location | basename }}`
       ansible.builtin.template:
         src: config.json.j2
         dest: "{{ logarr_paths_config_location }}"
         owner: "{{ user.name }}"
         group: "{{ user.name }}"
-        mode: 0775
-
-  when: not logarr_config.stat.exists
+        mode: "0775"

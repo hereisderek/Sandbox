@@ -30,7 +30,9 @@ wordpress_paths_recursive: true
 wordpress_web_subdomain: "{{ wordpress_name }}"
 wordpress_web_domain: "{{ user.domain }}"
 wordpress_web_port: "80"
-wordpress_web_url: "{{ 'https://' + wordpress_web_subdomain + '.' + wordpress_web_domain }}"
+wordpress_web_url: "{{ 'https://' + (wordpress_web_subdomain + '.' + wordpress_web_domain
+                    if (wordpress_web_subdomain | length > 0)
+                    else wordpress_web_domain) }}"
 
 ################################
 # DNS
@@ -44,9 +46,13 @@ wordpress_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-wordpress_traefik_middleware: "{{ traefik_default_middleware }}"
+wordpress_traefik_sso_middleware: ""
+wordpress_traefik_middleware_default: "{{ traefik_default_middleware }}"
+wordpress_traefik_middleware_custom: ""
 wordpress_traefik_certresolver: "{{ traefik_default_certresolver }}"
 wordpress_traefik_enabled: true
+wordpress_traefik_api_enabled: false
+wordpress_traefik_api_endpoint: ""
 
 ################################
 # Docker

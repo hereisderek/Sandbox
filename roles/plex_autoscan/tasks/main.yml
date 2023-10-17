@@ -20,7 +20,7 @@
     state: directory
     owner: "{{ user.name }}"
     group: "{{ user.name }}"
-    mode: 0775
+    mode: "0775"
     recurse: true
   with_items:
     - /opt/plex_autoscan
@@ -39,7 +39,7 @@
 
 - name: Clone plex_autoscan repo 'master'
   ansible.builtin.git:
-    repo: https://github.com/saltyorg/l3uddz/plex_autoscan.git
+    repo: https://github.com/l3uddz/plex_autoscan.git
     dest: /opt/plex_autoscan
     clone: true
     version: master

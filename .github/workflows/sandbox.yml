@@ -18,27 +18,35 @@ jobs:
   ansible-lint:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Lint Ansible Playbook
-      uses: ansible-community/ansible-lint-action@v6.8.2
+      - name: Lint Ansible Playbook
+        uses: ansible-community/ansible-lint-action@v6.16.0
+
+  check-entries:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check Missing Entries
+        run: ./scripts/check_missing_entries.sh
 
   add-contributors:
     runs-on: ubuntu-22.04
     if: github.ref == 'refs/heads/master'
     steps:
-    - uses: actions/checkout@v3
-    - uses: BobAnkh/add-contributors@master
-      with:
-        REPO_NAME: 'saltyorg/Sandbox'
-        CONTRIBUTOR: '### Contributors'
-        COLUMN_PER_ROW: '6'
-        ACCESS_TOKEN: ${{secrets.GH_TOKEN}}
-        IMG_WIDTH: '100'
-        FONT_SIZE: '14'
-        PATH: '/README.md'
-        COMMIT_MESSAGE: 'docs(README): update contributors'
-        AVATAR_SHAPE: 'square'
+      - uses: actions/checkout@v3
+      - uses: BobAnkh/add-contributors@master
+        with:
+          REPO_NAME: 'saltyorg/Sandbox'
+          CONTRIBUTOR: '### Contributors'
+          COLUMN_PER_ROW: '6'
+          ACCESS_TOKEN: ${{ secrets.GH_TOKEN }}
+          IMG_WIDTH: '100'
+          FONT_SIZE: '14'
+          PATH: '/README.md'
+          COMMIT_MESSAGE: 'docs(README): update contributors'
+          AVATAR_SHAPE: 'square'
 
   find-roles:
     runs-on: ubuntu-22.04
@@ -47,14 +55,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - id: set-matrix
-        run: echo "matrix={\"roles\":[$(awk -F'[][]' -e '/ role:/ && FNR > 17' sandbox.yml | awk '!/#/' | awk -F'[][]' '{print $2}' | tr '\n' ',' | sed 's/,*$//' | sed "s/.\(roles\|hetzner_nfs_server_uninstall\|hetzner_nfs_client_mount\|hetzner_nfs_client_unmount\).,//g")]}" >> $GITHUB_OUTPUT
+        run: echo "matrix={\"roles\":[$(awk '/# Apps Start/{flag=1;next}/# Apps End/{flag=0}flag' sandbox.yml | awk '!/#/' | awk -F'[][]' '{print $2}' | tr '\n' ',' | sed 's/,*$//' | awk -F',' '{ for( i=1; i<=NF; i++ ) print $i }' | awk '{ gsub(/ /,""); print }'| sort -u | awk -vORS=, '{ print $1 }' | sed 's/,$/\n/')]}" >> $GITHUB_OUTPUT
 
   install:
     name: '${{ matrix.roles }}'
-    needs: [ansible-lint, find-roles]
+    needs: [ansible-lint, check-entries, find-roles]
     runs-on: ubuntu-22.04
     strategy:
-      matrix: ${{fromJson(needs.find-roles.outputs.matrix)}}
+      matrix: ${{ fromJson(needs.find-roles.outputs.matrix) }}
       fail-fast: false
 
     steps:
@@ -86,7 +94,7 @@ jobs:
           timeout_minutes: 30
           max_attempts: 3
           shell: bash
-          command: cd /srv/git/saltbox && sudo ansible-playbook saltbox.yml --tags "core" --skip-tags "sanity_check,settings" --extra-vars '{"continuous_integration":true}'
+          command: cd /srv/git/saltbox && sudo ansible-playbook saltbox.yml --tags "core" --skip-tags "settings" --extra-vars '{"continuous_integration":true}'
 
       - name: Copy default configuration
         run: cp -n defaults/ansible.cfg.default ansible.cfg && cp -n defaults/settings.yml.default settings.yml
@@ -97,13 +105,13 @@ jobs:
           timeout_minutes: 30
           max_attempts: 3
           shell: bash
-          command: sudo ansible-playbook sandbox.yml --tags "${{ matrix.roles }}" --skip-tags "sanity_check,settings" --extra-vars '{"continuous_integration":true}'
+          command: sudo ansible-playbook sandbox.yml --tags "${{ matrix.roles }}" --skip-tags "settings" --extra-vars '{"continuous_integration":true}'
 
   webhook:
     name: 'webhook'
     runs-on: self-hosted
     needs: install
-    if: always() && github.event_name != 'pull_request'
+    if: always() && github.event_name != 'pull_request' && github.event.repository.fork == false
     steps:
       - uses: technote-space/workflow-conclusion-action@v3
       - uses: sarisia/actions-status-discord@v1

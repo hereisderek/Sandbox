@@ -13,14 +13,12 @@
   register: nabarr_config
 
 - name: Settings | New `{{ nabarr_paths_config_location | basename }}` tasks
+  when: not nabarr_config.stat.exists
   block:
-
     - name: Settings | Import default `{{ nabarr_paths_location | basename }}`
       ansible.builtin.copy:
         src: config.yml.sample
         dest: "{{ nabarr_paths_location }}/config.yml.sample"
         owner: "{{ user.name }}"
         group: "{{ user.name }}"
-        mode: 0775
-
-  when: not nabarr_config.stat.exists
+        mode: "0775"

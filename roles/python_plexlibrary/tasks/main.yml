@@ -9,8 +9,7 @@
 ---
 - name: Set Default Plex instance
   ansible.builtin.set_fact:
-    plex_name: "{{ plex_instances[0] }}"
-  when: not plex_name is defined
+    plex_name: "{{ plex_name | default(plex_instances[0]) }}"
 
 - name: Create python-plexlibrary directories
   ansible.builtin.file:

@@ -30,7 +30,9 @@ funkwhale_paths_folders_list:
 funkwhale_web_subdomain: "{{ funkwhale_name }}"
 funkwhale_web_domain: "{{ user.domain }}"
 funkwhale_web_port: "80"
-funkwhale_web_url: "{{ 'https://' + funkwhale_web_subdomain + '.' + funkwhale_web_domain }}"
+funkwhale_web_url: "{{ 'https://' + (funkwhale_web_subdomain + '.' + funkwhale_web_domain
+                    if (funkwhale_web_subdomain | length > 0)
+                    else funkwhale_web_domain) }}"
 
 ################################
 # DNS
@@ -44,9 +46,13 @@ funkwhale_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-funkwhale_traefik_middleware: "{{ traefik_default_middleware }}"
+funkwhale_traefik_sso_middleware: ""
+funkwhale_traefik_middleware_default: "{{ traefik_default_middleware }}"
+funkwhale_traefik_middleware_custom: ""
 funkwhale_traefik_certresolver: "{{ traefik_default_certresolver }}"
 funkwhale_traefik_enabled: true
+funkwhale_traefik_api_enabled: false
+funkwhale_traefik_api_endpoint: ""
 
 ################################
 # Docker

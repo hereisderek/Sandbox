@@ -30,7 +30,9 @@ kitana_paths_config_location: "{{ kitana_paths_location }}/config.yml"
 kitana_web_subdomain: "{{ kitana_name }}"
 kitana_web_domain: "{{ user.domain }}"
 kitana_web_port: "31337"
-kitana_web_url: "{{ 'https://' + kitana_web_subdomain + '.' + kitana_web_domain }}"
+kitana_web_url: "{{ 'https://' + (kitana_web_subdomain + '.' + kitana_web_domain
+                 if (kitana_web_subdomain | length > 0)
+                 else kitana_web_domain) }}"
 
 ################################
 # DNS
@@ -44,9 +46,13 @@ kitana_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-kitana_traefik_middleware: "{{ traefik_default_middleware }}"
+kitana_traefik_sso_middleware: ""
+kitana_traefik_middleware_default: "{{ traefik_default_middleware }}"
+kitana_traefik_middleware_custom: ""
 kitana_traefik_certresolver: "{{ traefik_default_certresolver }}"
 kitana_traefik_enabled: true
+kitana_traefik_api_enabled: false
+kitana_traefik_api_endpoint: ""
 
 ################################
 # Docker

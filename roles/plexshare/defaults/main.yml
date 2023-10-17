@@ -29,7 +29,9 @@ plexshare_paths_folders_list:
 plexshare_web_subdomain: "{{ plexshare_name }}"
 plexshare_web_domain: "{{ user.domain }}"
 plexshare_web_port: "80"
-plexshare_web_url: "{{ 'https://' + plexshare_web_subdomain + '.' + plexshare_web_domain }}"
+plexshare_web_url: "{{ 'https://' + (plexshare_web_subdomain + '.' + plexshare_web_domain
+                    if (plexshare_web_subdomain | length > 0)
+                    else plexshare_web_domain) }}"
 
 ################################
 # DNS
@@ -44,18 +46,12 @@ plexshare_dns_proxy: "{{ dns.proxied }}"
 ################################
 
 plexshare_traefik_sso_middleware: "{{ traefik_default_sso_middleware }}"
-plexshare_traefik_middleware_default: "{{ traefik_default_middleware + ','
-                                          + lookup('vars', plexshare_name + '_traefik_sso_middleware', default=plexshare_traefik_sso_middleware)
-                                       if (lookup('vars', plexshare_name + '_traefik_sso_middleware', default=plexshare_traefik_sso_middleware) | length > 0)
-                                       else traefik_default_middleware }}"
+plexshare_traefik_middleware_default: "{{ traefik_default_middleware }}"
 plexshare_traefik_middleware_custom: ""
-plexshare_traefik_middleware: "{{ plexshare_traefik_middleware_default + ','
-                                  + plexshare_traefik_middleware_custom
-                               if (not plexshare_traefik_middleware_custom.startswith(',') and plexshare_traefik_middleware_custom | length > 0)
-                               else plexshare_traefik_middleware_default
-                                  + plexshare_traefik_middleware_custom }}"
 plexshare_traefik_certresolver: "{{ traefik_default_certresolver }}"
 plexshare_traefik_enabled: true
+plexshare_traefik_api_enabled: false
+plexshare_traefik_api_endpoint: ""
 
 ################################
 # Docker

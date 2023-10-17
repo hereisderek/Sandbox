@@ -29,7 +29,9 @@ gotify_paths_folders_list:
 gotify_web_subdomain: "{{ gotify_name }}"
 gotify_web_domain: "{{ user.domain }}"
 gotify_web_port: "80"
-gotify_web_url: "{{ 'https://' + gotify_web_subdomain + '.' + gotify_web_domain }}"
+gotify_web_url: "{{ 'https://' + (gotify_web_subdomain + '.' + gotify_web_domain
+                 if (gotify_web_subdomain | length > 0)
+                 else gotify_web_domain) }}"
 
 ################################
 # DNS
@@ -43,9 +45,13 @@ gotify_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-gotify_traefik_middleware: "{{ traefik_default_middleware }}"
+gotify_traefik_sso_middleware: ""
+gotify_traefik_middleware_default: "{{ traefik_default_middleware }}"
+gotify_traefik_middleware_custom: ""
 gotify_traefik_certresolver: "{{ traefik_default_certresolver }}"
 gotify_traefik_enabled: true
+gotify_traefik_api_enabled: false
+gotify_traefik_api_endpoint: ""
 
 ################################
 # Docker

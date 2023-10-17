@@ -30,7 +30,9 @@ filebot_paths_config_location: "{{ filebot_paths_location }}/config.yml"
 filebot_web_subdomain: "{{ filebot_name }}"
 filebot_web_domain: "{{ user.domain }}"
 filebot_web_port: "5800"
-filebot_web_url: "{{ 'https://' + filebot_web_subdomain + '.' + filebot_web_domain }}"
+filebot_web_url: "{{ 'https://' + (filebot_web_subdomain + '.' + filebot_web_domain
+                  if (filebot_web_subdomain | length > 0)
+                  else filebot_web_domain) }}"
 
 ################################
 # DNS
@@ -45,13 +47,12 @@ filebot_dns_proxy: "{{ dns.proxied }}"
 ################################
 
 filebot_traefik_sso_middleware: "{{ traefik_default_sso_middleware }}"
-filebot_traefik_middleware: "{{ traefik_default_middleware + ',' + filebot_traefik_sso_middleware
-                             if (filebot_traefik_sso_middleware | length > 0)
-                             else traefik_default_middleware }}"
+filebot_traefik_middleware_default: "{{ traefik_default_middleware }}"
+filebot_traefik_middleware_custom: ""
 filebot_traefik_certresolver: "{{ traefik_default_certresolver }}"
 filebot_traefik_enabled: true
 filebot_traefik_api_enabled: true
-filebot_traefik_api_endpoint: "`/websockify`"
+filebot_traefik_api_endpoint: "PathPrefix(`/websockify`)"
 
 ################################
 # Docker

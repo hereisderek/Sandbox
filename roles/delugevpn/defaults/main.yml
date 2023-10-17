@@ -35,7 +35,9 @@ delugevpn_paths_folders_list:
 delugevpn_web_subdomain: "{{ delugevpn_name }}"
 delugevpn_web_domain: "{{ user.domain }}"
 delugevpn_web_port: "8112"
-delugevpn_web_url: "{{ 'https://' + delugevpn_web_subdomain + '.' + delugevpn_web_domain }}"
+delugevpn_web_url: "{{ 'https://' + (delugevpn_web_subdomain + '.' + delugevpn_web_domain
+                    if (delugevpn_web_subdomain | length > 0)
+                    else delugevpn_web_domain) }}"
 
 ################################
 # DNS
@@ -49,9 +51,13 @@ delugevpn_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-delugevpn_traefik_middleware: "{{ traefik_default_middleware }}"
+delugevpn_traefik_sso_middleware: ""
+delugevpn_traefik_middleware_default: "{{ traefik_default_middleware }}"
+delugevpn_traefik_middleware_custom: ""
 delugevpn_traefik_certresolver: "{{ traefik_default_certresolver }}"
 delugevpn_traefik_enabled: true
+delugevpn_traefik_api_enabled: false
+delugevpn_traefik_api_endpoint: ""
 
 ################################
 # Settings

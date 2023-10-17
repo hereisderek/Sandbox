@@ -34,7 +34,9 @@ stash_paths_folders_list:
 stash_web_subdomain: "{{ stash_name }}"
 stash_web_domain: "{{ user.domain }}"
 stash_web_port: "9999"
-stash_web_url: "{{ 'https://' + stash_web_subdomain + '.' + stash_web_domain }}"
+stash_web_url: "{{ 'https://' + (stash_web_subdomain + '.' + stash_web_domain
+                if (stash_web_subdomain | length > 0)
+                else stash_web_domain) }}"
 
 ################################
 # DNS
@@ -49,16 +51,8 @@ stash_dns_proxy: "{{ dns.proxied }}"
 ################################
 
 stash_traefik_sso_middleware: "{{ traefik_default_sso_middleware }}"
-stash_traefik_middleware_default: "{{ traefik_default_middleware + ','
-                                      + lookup('vars', stash_name + '_traefik_sso_middleware', default=stash_traefik_sso_middleware)
-                                   if (lookup('vars', stash_name + '_traefik_sso_middleware', default=stash_traefik_sso_middleware) | length > 0)
-                                   else traefik_default_middleware }}"
+stash_traefik_middleware_default: "{{ traefik_default_middleware }}"
 stash_traefik_middleware_custom: ""
-stash_traefik_middleware: "{{ stash_traefik_middleware_default + ','
-                              + stash_traefik_middleware_custom
-                           if (not stash_traefik_middleware_custom.startswith(',') and stash_traefik_middleware_custom | length > 0)
-                           else stash_traefik_middleware_default
-                              + stash_traefik_middleware_custom }}"
 stash_traefik_certresolver: "{{ traefik_default_certresolver }}"
 stash_traefik_enabled: true
 stash_traefik_api_enabled: false
@@ -74,7 +68,7 @@ stash_docker_container: "{{ stash_name }}"
 # Image
 stash_docker_image_pull: true
 stash_docker_image_tag: "latest"
-stash_docker_image: "cr.hotio.dev/hotio/stash:{{ stash_docker_image_tag }}"
+stash_docker_image: "ghcr.io/hotio/stash:{{ stash_docker_image_tag }}"
 
 # Ports
 stash_docker_ports_defaults: []

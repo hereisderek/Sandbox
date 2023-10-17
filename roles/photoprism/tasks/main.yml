@@ -17,7 +17,7 @@
     name: "photoprisms"
     login_host: "mariadb"
     login_user: "root"
-    login_password: "{{ mariadb_docker_envs_mysql_root_password }}"
+    login_password: "{{ mariadb_docker_env_password }}"
     state: present
   ignore_errors: true
 
@@ -40,6 +40,10 @@
 
 - name: Create directories
   ansible.builtin.include_tasks: "{{ resources_tasks_path }}/directories/create_directories.yml"
+
+- name: Docker Devices Task
+  ansible.builtin.include_tasks: "{{ resources_tasks_path }}/docker/set_docker_devices_variable.yml"
+  when: gpu.intel or gpu.nvidia
 
 - name: Create Docker container
   ansible.builtin.include_tasks: "{{ resources_tasks_path }}/docker/create_docker_container.yml"

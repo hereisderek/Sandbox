@@ -29,7 +29,9 @@ freshrss_paths_folders_list:
 freshrss_web_subdomain: "{{ freshrss_name }}"
 freshrss_web_domain: "{{ user.domain }}"
 freshrss_web_port: "80"
-freshrss_web_url: "{{ 'https://' + freshrss_web_subdomain + '.' + freshrss_web_domain }}"
+freshrss_web_url: "{{ 'https://' + (freshrss_web_subdomain + '.' + freshrss_web_domain
+                   if (freshrss_web_subdomain | length > 0)
+                   else freshrss_web_domain) }}"
 
 ################################
 # DNS
@@ -43,9 +45,13 @@ freshrss_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-freshrss_traefik_middleware: "{{ traefik_default_middleware }}"
+freshrss_traefik_sso_middleware: ""
+freshrss_traefik_middleware_default: "{{ traefik_default_middleware }}"
+freshrss_traefik_middleware_custom: ""
 freshrss_traefik_certresolver: "{{ traefik_default_certresolver }}"
 freshrss_traefik_enabled: true
+freshrss_traefik_api_enabled: false
+freshrss_traefik_api_endpoint: ""
 
 ################################
 # Docker

@@ -19,14 +19,13 @@
 
 - name: unzippers | Import tools "{{ jdownloader2_paths_tools_location | basename }}" tasks
   block:
-
     - name: unzippers | Import 7zip 1509
       ansible.builtin.copy:
         src: "sevenzipjbinding1509.jar"
         dest: "{{ jdownloader2_paths_tools_location }}/sevenzipjbinding1509.jar"
         owner: "{{ user.name }}"
         group: "{{ user.name }}"
-        mode: 0775
+        mode: "0775"
         force: no
       when: not sevenzip_1509.stat.exists
 
@@ -36,6 +35,6 @@
         dest: "{{ jdownloader2_paths_tools_location }}/sevenzipjbinding1509Linux.jar"
         owner: "{{ user.name }}"
         group: "{{ user.name }}"
-        mode: 0775
+        mode: "0775"
         force: no
       when: not sevenzip_1509linux.stat.exists

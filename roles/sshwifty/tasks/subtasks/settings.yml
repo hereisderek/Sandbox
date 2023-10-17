@@ -13,14 +13,12 @@
   register: sshwifty_config
 
 - name: Settings | New `{{ sshwifty_paths_config_location | basename }}` tasks
+  when: not sshwifty_config.stat.exists
   block:
-
     - name: Settings | Import default `{{ sshwifty_paths_config_location | basename }}`
       ansible.builtin.template:
         src: sshwifty.conf.json.j2
         dest: "{{ sshwifty_paths_config_location }}"
         owner: "{{ user.name }}"
         group: "{{ user.name }}"
-        mode: 0775
-
-  when: not sshwifty_config.stat.exists
+        mode: "0775"

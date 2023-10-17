@@ -11,14 +11,12 @@
   register: glances_web_config
 
 - name: Settings | New `{{ glances_web_paths_config_location | basename }}` tasks
+  when: not glances_web_config.stat.exists
   block:
-
     - name: Settings | Import default `{{ glances_web_paths_config_location | basename }}`
       ansible.builtin.copy:
         src: glances.conf
         dest: "{{ glances_web_paths_config_location }}"
         owner: "{{ user.name }}"
         group: "{{ user.name }}"
-        mode: 0775
-
-  when: not glances_web_config.stat.exists
+        mode: "0775"

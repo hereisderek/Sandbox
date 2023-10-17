@@ -30,7 +30,9 @@ omegabrr_paths_folders_list:
 omegabrr_web_subdomain: "{{ omegabrr_name }}"
 omegabrr_web_domain: "{{ user.domain }}"
 omegabrr_web_port: "7441"
-omegabrr_web_url: "{{ 'https://' + omegabrr_web_subdomain + '.' + omegabrr_web_domain }}"
+omegabrr_web_url: "{{ 'https://' + (omegabrr_web_subdomain + '.' + omegabrr_web_domain
+                   if (omegabrr_web_subdomain | length > 0)
+                   else omegabrr_web_domain) }}"
 
 ################################
 # DNS
@@ -44,9 +46,13 @@ omegabrr_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-omegabrr_traefik_middleware: "{{ traefik_default_middleware }}"
+omegabrr_traefik_sso_middleware: ""
+omegabrr_traefik_middleware_default: "{{ traefik_default_middleware }}"
+omegabrr_traefik_middleware_custom: ""
 omegabrr_traefik_certresolver: "{{ traefik_default_certresolver }}"
 omegabrr_traefik_enabled: true
+omegabrr_traefik_api_enabled: false
+omegabrr_traefik_api_endpoint: ""
 
 ################################
 # Docker

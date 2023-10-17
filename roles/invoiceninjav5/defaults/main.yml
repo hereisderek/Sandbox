@@ -31,7 +31,9 @@ invoiceninjav5_paths_folders_list:
 invoiceninjav5_nginx_web_subdomain: "invoiceninja"
 invoiceninjav5_nginx_web_domain: "{{ user.domain }}"
 invoiceninjav5_nginx_web_port: "80"
-invoiceninjav5_nginx_web_url: "{{ 'https://' + invoiceninjav5_web_subdomain + '.' + invoiceninjav5_web_domain }}"
+invoiceninjav5_nginx_web_url: "{{ 'https://' + (invoiceninjav5_nginx_web_subdomain + '.' + invoiceninjav5_nginx_web_domain
+                               if (invoiceninjav5_nginx_web_subdomain | length > 0)
+                               else invoiceninjav5_nginx_web_domain) }}"
 
 ################################
 # DNS
@@ -45,9 +47,13 @@ invoiceninjav5_nginx_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-invoiceninjav5_nginx_traefik_middleware: "{{ traefik_default_middleware }}"
+invoiceninjav5_nginx_traefik_sso_middleware: ""
+invoiceninjav5_nginx_traefik_middleware_default: "{{ traefik_default_middleware }}"
+invoiceninjav5_nginx_traefik_middleware_custom: ""
 invoiceninjav5_nginx_traefik_certresolver: "{{ traefik_default_certresolver }}"
 invoiceninjav5_nginx_traefik_enabled: true
+invoiceninjav5_nginx_traefik_api_enabled: false
+invoiceninjav5_nginx_traefik_api_endpoint: ""
 
 ################################
 # Docker

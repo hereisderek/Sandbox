@@ -1,6 +1,4 @@
 ---
-alternatrrx:
-  roles: ["1080webdl", "1080remux"]
 a_train:
   remotes: [""]
 delugevpn:
@@ -26,6 +24,10 @@ doplarr:
   overseer_default_id:
   partial_seasons: "true"
   log_level: ":info"
+foundry:
+  user: your_foundryvtt_username
+  pass: your_foundryvtt_password
+  app_key: your_foundryvtt_license
 goplaxt:
   trakt_id: ~
   trakt_secret: ~
@@ -33,14 +35,14 @@ handbrake:
   handbrake_pass: saltbox
 invoiceninja:
   app_key: 'base64:O1S3kAJEDgo92gPkXtxfdCJpoGShgKloUSdcaHMXmoY='
+membarr:
+  discord_token: your_discord_bot_token
 moviematch:
   libraries: Movies
   plex_url: http://plex:32400
 notifiarr:
   api_key: "api-key-from-notifiarr.com"
   ui_password: "username:password"
-ombix:
-  roles: ["4k"]
 plex_meta_manager:
   time: "03:00"
 qbit_manage:
@@ -69,10 +71,6 @@ qbittorrentvpn:
   vpn_client: wireguard
 recyclarr:
   cron_schedule: "@daily"
-requestrrx:
-  roles: ["1080p", "4k"]
-rfloodx:
-  roles: [""]
 sarotate:
   remotes: [""]
   sa_path: "your_sa_folder_path"
@@ -89,5 +87,6 @@ transmissionvpn:
   vpn_user:
   vpn_pass:
   vpn_prov:
-transmissionx:
-  roles: [""]
+your_spotify:
+  public_key:
+  secret_key:

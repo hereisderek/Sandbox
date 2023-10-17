@@ -9,8 +9,7 @@
 ---
 - name: Set default Plex instance
   ansible.builtin.set_fact:
-    plex_name: "{{ plex_instances[0] }}"
-  when: not plex_name is defined
+    plex_name: "{{ plex_name | default(plex_instances[0]) }}"
 
 - name: Check if {{ plex_paths_config_location | basename }} exists
   ansible.builtin.stat:
@@ -18,6 +17,8 @@
   register: preferences_xml
 
 - name: Get default Plex username
+  ignore_errors: true
+  when: preferences_xml.stat.exists
   block:
     - name: Get {{ plex_paths_config_location | basename }} XML data
       community.general.xml:
@@ -30,9 +31,6 @@
       ansible.builtin.set_fact:
         plex_owner_username: "{{ preferences_xml_resp.matches[0].Preferences.PlexOnlineUsername }}"
 
-  ignore_errors: true
-  when: preferences_xml.stat.exists
-
 - name: Plex Auth Token tasks
   ansible.builtin.include_role:
     name: plex_auth_token
@@ -42,4 +40,4 @@
   ansible.builtin.template:
     src: env.j2
     dest: "{{ plextraktsync_paths_env }}"
-    mode: 0644
+    mode: "0644"

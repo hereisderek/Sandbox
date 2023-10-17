@@ -30,7 +30,9 @@ reposilite_paths_folders_list:
 reposilite_web_subdomain: "{{ reposilite_name }}"
 reposilite_web_domain: "{{ user.domain }}"
 reposilite_web_port: "8080"
-reposilite_web_url: "{{ 'https://' + reposilite_web_subdomain + '.' + reposilite_web_domain }}"
+respoilite_web_url: "{{ 'https://' + (respoilite_web_subdomain + '.' + respoilite_web_domain
+                     if (respoilite_web_subdomain | length > 0)
+                     else respoilite_web_domain) }}"
 
 ################################
 # DNS
@@ -45,20 +47,12 @@ reposilite_dns_proxy: "{{ dns.proxied }}"
 ################################
 
 reposilite_traefik_sso_middleware: "{{ traefik_default_sso_middleware }}"
-reposilite_traefik_middleware_default: "{{ traefik_default_middleware + ','
-                                          + lookup('vars', reposilite_name + '_traefik_sso_middleware', default=reposilite_traefik_sso_middleware)
-                                       if (lookup('vars', reposilite_name + '_traefik_sso_middleware', default=reposilite_traefik_sso_middleware) | length > 0)
-                                       else traefik_default_middleware }}"
+reposilite_traefik_middleware_default: "{{ traefik_default_middleware }}"
 reposilite_traefik_middleware_custom: ""
-reposilite_traefik_middleware: "{{ reposilite_traefik_middleware_default + ','
-                                  + reposilite_traefik_middleware_custom
-                               if (not reposilite_traefik_middleware_custom.startswith(',') and reposilite_traefik_middleware_custom | length > 0)
-                               else reposilite_traefik_middleware_default
-                                  + reposilite_traefik_middleware_custom }}"
 reposilite_traefik_certresolver: "{{ traefik_default_certresolver }}"
 reposilite_traefik_enabled: true
 reposilite_traefik_api_enabled: true
-reposilite_traefik_api_endpoint: "`/api`"
+reposilite_traefik_api_endpoint: "PathPrefix(`/api`)"
 
 ################################
 # Docker

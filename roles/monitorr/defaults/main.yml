@@ -29,7 +29,9 @@ monitorr_paths_folders_list:
 monitorr_web_subdomain: "{{ monitorr_name }}"
 monitorr_web_domain: "{{ user.domain }}"
 monitorr_web_port: "80"
-monitorr_web_url: "{{ 'https://' + monitorr_web_subdomain + '.' + monitorr_web_domain }}"
+monitorr_web_url: "{{ 'https://' + (monitorr_web_subdomain + '.' + monitorr_web_domain
+                   if (monitorr_web_subdomain | length > 0)
+                   else monitorr_web_domain) }}"
 
 ################################
 # DNS
@@ -43,9 +45,13 @@ monitorr_dns_proxy: "{{ dns.proxied }}"
 # Traefik
 ################################
 
-monitorr_traefik_middleware: "{{ traefik_default_middleware }}"
+monitorr_traefik_sso_middleware: ""
+monitorr_traefik_middleware_default: "{{ traefik_default_middleware }}"
+monitorr_traefik_middleware_custom: ""
 monitorr_traefik_certresolver: "{{ traefik_default_certresolver }}"
 monitorr_traefik_enabled: true
+monitorr_traefik_api_enabled: false
+monitorr_traefik_api_endpoint: ""
 
 ################################
 # Docker

@@ -29,7 +29,9 @@ joplin_paths_folders_list:
 joplin_web_subdomain: "{{ joplin_name }}"
 joplin_web_domain: "{{ user.domain }}"
 joplin_web_port: "22300"
-joplin_web_url: "{{ 'https://' + joplin_web_subdomain + '.' + joplin_web_domain }}"
+joplin_web_url: "{{ 'https://' + (joplin_web_subdomain + '.' + joplin_web_domain
+                 if (joplin_web_subdomain | length > 0)
+                 else joplin_web_domain) }}"
 
 ################################
 # DNS
@@ -44,11 +46,12 @@ joplin_dns_proxy: "{{ dns.proxied }}"
 ################################
 
 joplin_traefik_sso_middleware: ""
-joplin_traefik_middleware: "{{ traefik_default_middleware + ',' + joplin_traefik_sso_middleware
-                            if (joplin_traefik_sso_middleware | length > 0)
-                            else traefik_default_middleware }}"
+joplin_traefik_middleware_default: "{{ traefik_default_middleware }}"
+joplin_traefik_middleware_custom: ""
 joplin_traefik_certresolver: "{{ traefik_default_certresolver }}"
 joplin_traefik_enabled: true
+joplin_traefik_api_enabled: false
+joplin_traefik_api_endpoint: ""
 
 ################################
 # Docker
