@@ -25,6 +25,7 @@ audiobookshelf_paths_folders_list:
   - "{{ audiobookshelf_paths_location }}/metadata"
   - "/mnt/unionfs/Media/Audiobooks"
   - "/mnt/unionfs/Media/Podcasts"
+audiobookshelf_paths_recursive: true
 
 ################################
 # Web
@@ -78,8 +79,6 @@ audiobookshelf_docker_ports: "{{ lookup('vars', audiobookshelf_name + '_docker_p
 # Envs
 audiobookshelf_docker_envs_default:
   TZ: "{{ tz }}"
-  AUDIOBOOKSHELF_UID: "{{ uid }}"
-  AUDIOBOOKSHELF_GID: "{{ gid }}"
 audiobookshelf_docker_envs_custom: {}
 audiobookshelf_docker_envs: "{{ lookup('vars', audiobookshelf_name + '_docker_envs_default', default=audiobookshelf_docker_envs_default)
                                 | combine(lookup('vars', audiobookshelf_name + '_docker_envs_custom', default=audiobookshelf_docker_envs_custom)) }}"
@@ -148,3 +147,6 @@ audiobookshelf_docker_restart_policy: unless-stopped
 
 # State
 audiobookshelf_docker_state: started
+
+# User
+audiobookshelf_docker_user: "{{ uid }}:{{ gid }}"

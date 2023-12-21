@@ -7,18 +7,6 @@
 #                   GNU General Public License v3.0                                #
 ####################################################################################
 ---
-- name: Post-Install | Settings | Update Port in 'qbittorrentvpn.conf' config settings
-  community.general.ini_file:
-    path: "{{ qbittorrentvpn_paths_conf }}"
-    section: BitTorrent
-    option: Session\Port
-    value: "{{ qbittorrentvpn_docker_ports_56881 }}"
-    no_extra_spaces: true
-    state: present
-    owner: "{{ user.name }}"
-    group: "{{ user.name }}"
-    mode: "0775"
-
 - name: Post-Install | Settings | Update HostHeaderValidation 'qbittorrentvpn.conf' config settings
   community.general.ini_file:
     path: "{{ qbittorrentvpn_paths_conf }}"
@@ -38,6 +26,33 @@
     option: WebUI\CSRFProtection
     value: "false"
     no_extra_spaces: true
+    state: present
+    owner: "{{ user.name }}"
+    group: "{{ user.name }}"
+    mode: "0775"
+
+- name: Post-Install | Settings | Generate Password Hash
+  qbittorrent_passwd:
+    password: "{{ user.pass }}"
+  register: qbittorrent_hashed_passwd
+
+- name: Post-Install | Settings | Set qBittorrent 'WebUI\Username'
+  community.general.ini_file:
+    section: Preferences
+    option: WebUI\Username
+    value: '{{ user.name }}'
+    path: "{{ qbittorrentvpn_paths_conf }}"
+    state: present
+    owner: "{{ user.name }}"
+    group: "{{ user.name }}"
+    mode: "0775"
+
+- name: Post-Install | Settings | Set qBittorrent 'WebUI\Password_PBKDF2'
+  community.general.ini_file:
+    section: Preferences
+    option: WebUI\Password_PBKDF2
+    value: '{{ qbittorrent_hashed_passwd.msg }}'
+    path: "{{ qbittorrentvpn_paths_conf }}"
     state: present
     owner: "{{ user.name }}"
     group: "{{ user.name }}"
