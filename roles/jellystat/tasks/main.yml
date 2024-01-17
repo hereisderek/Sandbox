@@ -1,6 +1,6 @@
 #########################################################################
-# Title:            Sandbox: WordPress                                  #
-# Author(s):        Migz93, salty                                       #
+# Title:            Sandbox: Jellystat                                  #
+# Author(s):        salty                                               #
 # URL:              https://github.com/saltyorg/Sandbox                 #
 # --                                                                    #
 #########################################################################
@@ -20,13 +20,37 @@
 - name: Create directories
   ansible.builtin.include_tasks: "{{ resources_tasks_path }}/directories/create_directories.yml"
 
-- name: MariaDB | Create wordpress database
-  community.mysql.mysql_db:
-    name: "{{ lookup('vars', wordpress_name + '_mariadb_name', default=wordpress_mariadb_name) }}"
-    login_host: "{{ lookup('vars', wordpress_name + '_mariadb_login_host', default=wordpress_mariadb_login_host) }}"
-    login_user: "{{ lookup('vars', wordpress_name + '_mariadb_login_user', default=wordpress_mariadb_login_user) }}"
-    login_password: "{{ lookup('vars', wordpress_name + '_mariadb_password', default=wordpress_mariadb_password) }}"
-    state: present
+- name: Check if JWT secret file exists
+  ansible.builtin.stat:
+    path: "{{ jellystat_paths_jwt_secret_file }}"
+  register: jwt_file
+
+- name: Generate JWT Token Secret
+  ansible.builtin.shell: openssl rand -base64 32
+  register: jwt_secret
+  when: not jwt_file.stat.exists
+
+- name: Store JWT Token Secret in a file
+  ansible.builtin.copy:
+    content: "{{ jwt_secret.stdout }}"
+    dest: "{{ jellystat_paths_jwt_secret_file }}"
+    owner: "{{ user.name }}"
+    group: "{{ user.name }}"
+    mode: "0664"
+  when: not jwt_file.stat.exists
+
+- name: Read JWT Token Secret from file
+  ansible.builtin.shell: cat "{{ jellystat_paths_jwt_secret_file }}"
+  register: jwt_token
+  changed_when: False
+
+- name: PostgreSQL Role
+  ansible.builtin.include_role:
+    name: postgres
+  vars:
+    postgres_instances: ["{{ jellystat_name }}-postgres"]
+    postgres_docker_env_db: "jfstat"
+    postgres_docker_image_tag: "15.2-alpine"
 
 - name: Create Docker container
   ansible.builtin.include_tasks: "{{ resources_tasks_path }}/docker/create_docker_container.yml"

@@ -17,6 +17,8 @@ watchtower_instances: ["watchtower"]
 # Settings
 ################################
 
+watchtower_metrics_enable: false
+watchtower_metrics_external: false
 watchtower_poll_interval: "43200"
 
 ################################
@@ -27,6 +29,42 @@ watchtower_paths_folder: "{{ watchtower_name }}"
 watchtower_paths_location: "{{ server_appdata_path }}/{{ watchtower_paths_folder }}"
 watchtower_paths_folders_list:
   - "{{ watchtower_paths_location }}"
+
+################################
+# Web
+################################
+
+watchtower_metrics_web_subdomain: "{{ watchtower_name }}-metrics"
+watchtower_metrics_web_domain: "{{ user.domain }}"
+watchtower_metrics_web_port: "8080"
+watchtower_metrics_host: "{{ lookup('vars', watchtower_name + '_metrics_web_subdomain', default=watchtower_metrics_web_subdomain)
+                             + '.' + lookup('vars', watchtower_name + '_metrics_web_domain', default=watchtower_metrics_web_domain) }}"
+
+################################
+# DNS
+################################
+
+watchtower_metrics_dns_record: "{{ lookup('vars', watchtower_name + '_metrics_web_subdomain', default=watchtower_metrics_web_subdomain) }}"
+watchtower_metrics_dns_zone: "{{ lookup('vars', watchtower_name + '_metrics_web_domain', default=watchtower_metrics_web_domain) }}"
+watchtower_metrics_dns_proxy: "{{ dns.proxied }}"
+
+################################
+# Traefik
+################################
+
+watchtower_metrics_traefik_sso_middleware: ""
+watchtower_metrics_traefik_middleware_default: "{{ traefik_default_middleware
+                                              + (',' + lookup('vars', watchtower_name + '_metrics_traefik_sso_middleware', default=watchtower_metrics_traefik_sso_middleware)
+                                                if (lookup('vars', watchtower_name + '_metrics_traefik_sso_middleware', default=watchtower_metrics_traefik_sso_middleware) | length > 0)
+                                                else '') }}"
+watchtower_metrics_traefik_middleware_custom: ""
+watchtower_metrics_traefik_middleware: "{{ watchtower_metrics_traefik_middleware_default
+                                      + (',' + watchtower_metrics_traefik_middleware_custom
+                                        if (not watchtower_metrics_traefik_middleware_custom.startswith(',') and watchtower_metrics_traefik_middleware_custom | length > 0)
+                                        else watchtower_metrics_traefik_middleware_custom) }}"
+watchtower_metrics_traefik_certresolver: "{{ traefik_default_certresolver }}"
+watchtower_metrics_traefik_router: "{{ lookup('vars', watchtower_name + '_metrics_web_subdomain', default=watchtower_metrics_web_subdomain) }}"
+
 
 ################################
 # Docker
@@ -40,23 +78,24 @@ watchtower_docker_image_pull: true
 watchtower_docker_image_repo: "containrrr/watchtower"
 watchtower_docker_image_tag: "latest"
 watchtower_docker_image: "{{ lookup('vars', watchtower_name + '_docker_image_repo', default=watchtower_docker_image_repo)
-                          + ':' + lookup('vars', watchtower_name + '_docker_image_tag', default=watchtower_docker_image_tag) }}"
+                             + ':' + lookup('vars', watchtower_name + '_docker_image_tag', default=watchtower_docker_image_tag) }}"
 
 # Envs
 watchtower_docker_envs_default:
   TZ: "{{ tz }}"
   WATCHTOWER_CLEANUP: "true"
   WATCHTOWER_POLL_INTERVAL: "{{ watchtower_poll_interval }}"
+  WATCHTOWER_HTTP_API_METRICS: "{{ 'true' if watchtower_metrics_enable else omit }}"
 watchtower_docker_envs_custom: {}
 watchtower_docker_envs: "{{ lookup('vars', watchtower_name + '_docker_envs_default', default=watchtower_docker_envs_default)
-                         | combine(lookup('vars', watchtower_name + '_docker_envs_custom', default=watchtower_docker_envs_custom)) }}"
+                            | combine(lookup('vars', watchtower_name + '_docker_envs_custom', default=watchtower_docker_envs_custom)) }}"
 watchtower_docker_env_file: "{{ watchtower_paths_location + '/watchtower.env' if watchtower_env.stat.exists else omit }}"
 
 # Commands
 watchtower_docker_commands_default: []
 watchtower_docker_commands_custom: []
 watchtower_docker_commands: "{{ lookup('vars', watchtower_name + '_docker_commands_default', default=watchtower_docker_commands_default)
-                             + lookup('vars', watchtower_name + '_docker_commands_custom', default=watchtower_docker_commands_custom) }}"
+                                + lookup('vars', watchtower_name + '_docker_commands_custom', default=watchtower_docker_commands_custom) }}"
 
 
 # Volumes
@@ -64,27 +103,44 @@ watchtower_docker_volumes_default:
   - "/var/run/docker.sock:/var/run/docker.sock"
 watchtower_docker_volumes_custom: []
 watchtower_docker_volumes: "{{ lookup('vars', watchtower_name + '_docker_volumes_default', default=watchtower_docker_volumes_default)
-                            + lookup('vars', watchtower_name + '_docker_volumes_custom', default=watchtower_docker_volumes_custom) }}"
+                               + lookup('vars', watchtower_name + '_docker_volumes_custom', default=watchtower_docker_volumes_custom) }}"
 
 # Devices
 watchtower_docker_devices_default: []
 watchtower_docker_devices_custom: []
 watchtower_docker_devices: "{{ lookup('vars', watchtower_name + '_docker_devices_default', default=watchtower_docker_devices_default)
-                            + lookup('vars', watchtower_name + '_docker_devices_custom', default=watchtower_docker_devices_custom) }}"
+                               + lookup('vars', watchtower_name + '_docker_devices_custom', default=watchtower_docker_devices_custom) }}"
 
 # Hosts
 watchtower_docker_hosts_default: []
 watchtower_docker_hosts_custom: []
 watchtower_docker_hosts: "{{ docker_hosts_common
-                          | combine(lookup('vars', watchtower_name + '_docker_hosts_default', default=watchtower_docker_hosts_default))
-                          | combine(lookup('vars', watchtower_name + '_docker_hosts_custom', default=watchtower_docker_hosts_custom)) }}"
+                             | combine(lookup('vars', watchtower_name + '_docker_hosts_default', default=watchtower_docker_hosts_default))
+                             | combine(lookup('vars', watchtower_name + '_docker_hosts_custom', default=watchtower_docker_hosts_custom)) }}"
 
 # Labels
 watchtower_docker_labels_default: {}
+watchtower_docker_labels_metrics:
+  - '{ "traefik.http.routers.{{ watchtower_metrics_traefik_router }}-http.entrypoints": "web" }'
+  - '{ "traefik.http.routers.{{ watchtower_metrics_traefik_router }}-http.service": "{{ lookup("vars", watchtower_name + "_metrics_web_subdomain", default=watchtower_metrics_web_subdomain) }}" }'
+  - '{ "traefik.http.routers.{{ watchtower_metrics_traefik_router }}-http.rule": "Host(`{{ watchtower_metrics_host }}`)" }'
+  - '{ "traefik.http.routers.{{ watchtower_metrics_traefik_router }}-http.middlewares": "{{ traefik_default_middleware_http }}" }'
+  - '{ "traefik.http.routers.{{ watchtower_metrics_traefik_router }}-http.priority": "20" }'
+  - '{ "traefik.http.routers.{{ watchtower_metrics_traefik_router }}.entrypoints": "websecure" }'
+  - '{ "traefik.http.routers.{{ watchtower_metrics_traefik_router }}.service": "{{ lookup("vars", watchtower_name + "_metrics_web_subdomain", default=watchtower_metrics_web_subdomain) }}" }'
+  - '{ "traefik.http.routers.{{ watchtower_metrics_traefik_router }}.rule": "Host(`{{ watchtower_metrics_host }}`)" }'
+  - '{ "traefik.http.routers.{{ watchtower_metrics_traefik_router }}.tls.options": "securetls@file" }'
+  - '{ "traefik.http.routers.{{ watchtower_metrics_traefik_router }}.tls.certresolver": "{{ watchtower_metrics_traefik_certresolver }}" }'
+  - '{ "traefik.http.routers.{{ watchtower_metrics_traefik_router }}.middlewares": "{{ watchtower_metrics_traefik_middleware }}" }'
+  - '{ "traefik.http.routers.{{ watchtower_metrics_traefik_router }}.priority": "20" }'
+  - '{ "traefik.http.services.{{ watchtower_metrics_traefik_router }}.loadbalancer.server.port": "{{ watchtower_metrics_web_port }}" }'
 watchtower_docker_labels_custom: {}
 watchtower_docker_labels: "{{ docker_labels_common
-                           | combine(lookup('vars', watchtower_name + '_docker_labels_default', default=watchtower_docker_labels_default))
-                           | combine(lookup('vars', watchtower_name + '_docker_labels_custom', default=watchtower_docker_labels_custom)) }}"
+                              | combine(lookup('vars', watchtower_name + '_docker_labels_default', default=watchtower_docker_labels_default),
+                                        (lookup('vars', watchtower_name + '_docker_labels_metrics', default=watchtower_docker_labels_metrics)
+                                        if (watchtower_metrics_enable and watchtower_metrics_external)
+                                        else {}),
+                                        lookup('vars', watchtower_name + '_docker_labels_custom', default=watchtower_docker_labels_custom)) }}"
 
 # Hostname
 watchtower_docker_hostname: "{{ watchtower_name }}"
@@ -98,20 +154,20 @@ watchtower_docker_networks_alias: "{{ watchtower_name }}"
 watchtower_docker_networks_default: []
 watchtower_docker_networks_custom: []
 watchtower_docker_networks: "{{ docker_networks_common
-                             + lookup('vars', watchtower_name + '_docker_networks_default', default=watchtower_docker_networks_default)
-                             + lookup('vars', watchtower_name + '_docker_networks_custom', default=watchtower_docker_networks_custom) }}"
+                                + lookup('vars', watchtower_name + '_docker_networks_default', default=watchtower_docker_networks_default)
+                                + lookup('vars', watchtower_name + '_docker_networks_custom', default=watchtower_docker_networks_custom) }}"
 
 # Capabilities
 watchtower_docker_capabilities_default: []
 watchtower_docker_capabilities_custom: []
 watchtower_docker_capabilities: "{{ lookup('vars', watchtower_name + '_docker_capabilities_default', default=watchtower_docker_capabilities_default)
-                                 + lookup('vars', watchtower_name + '_docker_capabilities_custom', default=watchtower_docker_capabilities_custom) }}"
+                                    + lookup('vars', watchtower_name + '_docker_capabilities_custom', default=watchtower_docker_capabilities_custom) }}"
 
 # Security Opts
 watchtower_docker_security_opts_default: []
 watchtower_docker_security_opts_custom: []
 watchtower_docker_security_opts: "{{ lookup('vars', watchtower_name + '_docker_security_opts_default', default=watchtower_docker_security_opts_default)
-                                  + lookup('vars', watchtower_name + '_docker_security_opts_custom', default=watchtower_docker_security_opts_custom) }}"
+                                     + lookup('vars', watchtower_name + '_docker_security_opts_custom', default=watchtower_docker_security_opts_custom) }}"
 
 # Restart Policy
 watchtower_docker_restart_policy: unless-stopped

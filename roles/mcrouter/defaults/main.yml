@@ -10,7 +10,6 @@
 ################################
 # Basics
 ################################
-minecraft_instances: ["minecraft"]
 
 mcrouter_name: mcrouter
 mcrouter_minecraft_port: "25565"
@@ -53,7 +52,7 @@ mcrouter_docker_envs: "{{ mcrouter_docker_envs_default
 
 # Commands
 mcrouter_docker_commands_default:
-  - "--mapping={% for item in minecraft_instances %}{{ lookup('vars', item + '_web_subdomain', default=item) }}.{{ user.domain }}={{ lookup('vars', item + '_web_subdomain', default=item) }}:25565{{ '' if loop.last else ',' }}{% endfor %}"
+  - "--mapping={{ mcrouter_mapping[:-1] }}"
 mcrouter_docker_commands_custom: []
 mcrouter_docker_commands: "{{ mcrouter_docker_commands_default
                               + mcrouter_docker_commands_custom }}"
