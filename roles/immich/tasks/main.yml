@@ -10,13 +10,13 @@
 - name: Remove legacy redis Docker container
   ansible.builtin.include_tasks: "{{ resources_tasks_path }}/docker/remove_docker_container.yml"
   vars:
-    var_prefix: "{{ immich_name }}-redis"
+    var_prefix: "{{ immich_name }}_redis"
 
 - name: Import Redis Role
   ansible.builtin.include_role:
     name: redis
   vars:
-    redis_instances: ["{{ immich_name }}_redis"]
+    redis_instances: ["{{ immich_name }}-redis"]
     redis_docker_image_tag: "7-alpine"
     redis_paths_folder: "{{ immich_name }}"
     redis_paths_location: "{{ server_appdata_path }}/{{ redis_paths_folder }}/redis"
@@ -30,12 +30,12 @@
   ansible.builtin.include_role:
     name: postgres
   vars:
-    postgres_instances: ["{{ immich_name }}-postgres"]
-    postgres_docker_env_db: "{{ immich_name }}"
-    postgres_docker_image_tag: "pg14-v0.1.11"
-    postgres_docker_image_repo: "tensorchord/pgvecto-rs"
-    postgres_paths_folder: "{{ immich_name }}"
-    postgres_paths_location: "{{ server_appdata_path }}/{{ postgres_paths_folder }}/postgres"
+    postgres_instances: ["{{ immich_postgres_name }}"]
+    postgres_docker_env_db: "{{ immich_postgres_docker_env_db }}"
+    postgres_docker_image_tag: "{{ immich_postgres_docker_image_tag }}"
+    postgres_docker_image_repo: "{{ immich_postgres_docker_image_repo }}"
+    postgres_paths_folder: "{{ immich_postgres_paths_folder }}"
+    postgres_paths_location: "{{ immich_postgres_paths_location }}"
 
 - name: Add DNS record
   ansible.builtin.include_tasks: "{{ resources_tasks_path }}/dns/tasker.yml"

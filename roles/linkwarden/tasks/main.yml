@@ -1,27 +1,28 @@
 #########################################################################
-# Title:            Sandbox: Miniflux                                   #
-# Author(s):        powerdude                                            #
+# Title:            Sandbox: LInkWarden                                 #
+# Author(s):        CHAIR/Raneydazed                                    #
 # URL:              https://github.com/saltyorg/Sandbox                 #
 # --                                                                    #
 #########################################################################
 #                   GNU General Public License v3.0                     #
 #########################################################################
 ---
-- name: Remove existing legacy PostgreSQL container
-  ansible.builtin.include_tasks: "{{ resources_tasks_path }}/docker/remove_docker_container.yml"
-  vars:
-    _var_prefix: "{{ miniflux_name }}-postgres"
-
 - name: PostgreSQL Role
   ansible.builtin.include_role:
     name: postgres
   vars:
-    postgres_instances: ["{{ miniflux_postgres_name }}"]
-    postgres_docker_env_db: "{{ miniflux_postgres_docker_env_db }}"
-    postgres_docker_image_tag: "{{ miniflux_postgres_docker_image_tag }}"
-    postgres_docker_image_repo: "{{ miniflux_postgres_docker_image_repo }}"
-    postgres_paths_folder: "{{ miniflux_postgres_paths_folder }}"
-    postgres_paths_location: "{{ miniflux_postgres_paths_location }}"
+    postgres_instances: ["{{ linkwarden_postgres_name }}"]
+    postgres_docker_env_user: "{{ linkwarden_postgres_docker_env_user }}"
+    postgres_docker_env_password: "{{ linkwarden_postgres_docker_env_password }}"
+    postgres_docker_env_db: "{{ linkwarden_postgres_docker_env_db }}"
+    postgres_docker_image_tag: "{{ linkwarden_postgres_docker_image_tag }}"
+    postgres_docker_image_repo: "{{ linkwarden_postgres_docker_image_repo }}"
+    postgres_paths_folder: "{{ linkwarden_postgres_paths_folder }}"
+    postgres_paths_location: "{{ linkwarden_postgres_paths_location }}"
+
+- name: "Generate Secret Key"
+  ansible.builtin.shell: "openssl rand -base64 45"
+  register: linkwarden_secret_key
 
 - name: Add DNS record
   ansible.builtin.include_tasks: "{{ resources_tasks_path }}/dns/tasker.yml"

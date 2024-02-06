@@ -18,22 +18,25 @@ jobs:
   ansible-lint:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
       - name: Install packages
-        run: pip install "ansible>=9.0.0,<10.0.0" ansible-lint==6.22.0 jmespath
+        run: pip install "ansible>=9.0.0,<10.0.0" ansible-lint==6.22.2 jmespath
 
       - name: Run ansible linter
         run: ansible-lint
 
+      - name: Run salty linter
+        run: python3 ./scripts/salty-linter.py ./roles
+
   check-entries:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Check Missing Entries
         run: ./scripts/check_missing_entries.sh
@@ -42,7 +45,7 @@ jobs:
     runs-on: ubuntu-22.04
     if: github.ref == 'refs/heads/master'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: BobAnkh/add-contributors@master
         with:
           REPO_NAME: 'saltyorg/Sandbox'
@@ -60,7 +63,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - id: set-matrix
         run: echo "matrix={\"roles\":[$(awk '/# Apps Start/{flag=1;next}/# Apps End/{flag=0}flag' sandbox.yml | awk '!/#/' | awk -F'[][]' '{print $2}' | tr '\n' ',' | sed 's/,*$//' | awk -F',' '{ for( i=1; i<=NF; i++ ) print $i }' | awk '{ gsub(/ /,""); print }'| sort -u | awk -vORS=, '{ print $1 }' | sed 's/,$/\n/')]}" >> $GITHUB_OUTPUT
 
@@ -73,10 +76,10 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install Dependencies
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 10
           max_attempts: 3
@@ -96,7 +99,7 @@ jobs:
         run: cd /srv/git/saltbox && sudo ansible-playbook saltbox.yml --syntax-check
 
       - name: Install Saltbox Core
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 30
           max_attempts: 3
@@ -107,7 +110,7 @@ jobs:
         run: cp -n defaults/ansible.cfg.default ansible.cfg && cp -n defaults/settings.yml.default settings.yml
 
       - name: Install ${{ matrix.roles }}
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 30
           max_attempts: 3
@@ -120,7 +123,10 @@ jobs:
     needs: install
     if: always() && github.event_name != 'pull_request' && github.event.repository.fork == false
     steps:
-      - uses: technote-space/workflow-conclusion-action@v3
+      - uses: actions/checkout@v4
+      - name: Determine Workflow Conclusion
+        run: ./scripts/workflow-status.sh ${{ secrets.GH_TOKEN }} ${{ github.repository }} ${{ github.run_id }}
+
       - uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}

@@ -91,6 +91,7 @@
     - { role: krusader, tags: ['krusader'] }
     - { role: lazylibrarian, tags: ['lazylibrarian'] }
     - { role: linkding, tags: ['linkding'] }
+    - { role: linkwarden, tags: ['linkwarden'] }
     - { role: logarr, tags: ['logarr'] }
     - { role: lunasea, tags: ['lunasea'] }
     - { role: makemkv, tags: ['makemkv'] }
@@ -186,3 +187,5 @@
     - { role: youtubedl_material, tags: ['youtubedl_material'] }
     - { role: znc, tags: ['znc'] }
     # Apps End
+    # No CI
+    - { role: lgsm, tags: ['lgsm'] }

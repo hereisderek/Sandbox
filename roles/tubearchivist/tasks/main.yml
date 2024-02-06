@@ -18,22 +18,28 @@
     name: redis
   vars:
     redis_instances: ["{{ tubearchivist_name }}-redis"]
-    redis_docker_image_tag: "latest"
-    redis_docker_image: "redislabs/rejson"
+    redis_docker_image_tag: "{{ tubearchivist_redis_docker_image_tag }}"
+    redis_docker_image_repo: "redis/redis-stack-server"
     redis_paths_folder: "{{ tubearchivist_name }}"
     redis_paths_location: "{{ server_appdata_path }}/{{ redis_paths_folder }}/redis"
+
+- name: Remove legacy Elasticsearch Docker container
+  ansible.builtin.include_tasks: "{{ resources_tasks_path }}/docker/remove_docker_container.yml"
+  vars:
+    var_prefix: "{{ tubearchivist_name }}_elasticsearch"
 
 - name: Elasticsearch Role
   ansible.builtin.include_role:
     name: elasticsearch
   vars:
-    elasticsearch_name: "{{ tubearchivist_name }}_elasticsearch"
-    elasticsearch_docker_image_tag: "8.5.0"
+    elasticsearch_name: "{{ tubearchivist_name }}-elasticsearch"
+    elasticsearch_docker_image: "bbilly1/tubearchivist-es"
     elasticsearch_paths_folder: "{{ tubearchivist_name }}"
     elasticsearch_paths_location: "{{ server_appdata_path }}/{{ elasticsearch_paths_folder }}/elastiscsearch"
     elasticsearch_docker_envs_custom:
       path.repo: "/usr/share/elasticsearch/data/snapshot"
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      xpack.security.enabled: "true"
 
 - name: Add DNS record
   ansible.builtin.include_tasks: "{{ resources_tasks_path }}/dns/tasker.yml"
